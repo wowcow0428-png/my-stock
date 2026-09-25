@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>資產與質押管理</title>
+
+  <!-- PWA 手機全螢幕與主畫面 App 圖示設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="資產與質押">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-inner: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #3b82f6;
+      --up-red: #ef4444;
+      --down-green: #22c55e;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+    .container { max-width: 1140px; margin: 0 auto; }
+    h2, h3 { margin: 0 0 10px 0; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .stat-box {
+      background: var(--card-inner);
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); }
+    .stat-value { font-size: 1.25rem; font-weight: bold; margin-top: 4px; }
+    .stat-profit { font-size: 0.85rem; font-weight: bold; margin-top: 4px; }
+    .sub-value { font-size: 0.8rem; color: #38bdf8; margin-top: 2px; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-secondary { background: #475569; }
+    .btn-success { background: #16a34a; }
+    .btn-warning { background: #d97706; }
+    .btn-info { background: #0284c7; }
+    .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+    .filter-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+    .tab-btn {
+      background: #1e293b;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .table-container { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    th { color: var(--text-muted); font-weight: 500; }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-tw { background: #854d0e; color: #fef08a; }
+    .badge-us { background: #1e40af; color: #bfdbfe; }
+    .badge-sub { background: #065f46; color: #a7f3d0; }
+    .pledge-safe { background: #065f46; color: #a7f3d0; }
+    .pledge-warn { background: #854d0e; color: #fef08a; }
+    .pledge-danger { background: #991b1b; color: #fecaca; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .text-up { color: #ef4444; font-weight: bold; }
+    .text-down { color: #22c55e; font-weight: bold; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .form-group { display: flex; flex-direction: column; position: relative; }
+    label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    input, select {
+      background: var(--card-inner);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+    .suggestions-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 50;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .suggestion-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.85rem;
+    }
+    .suggestion-item:hover { background: #334155; color: #38bdf8; }
+    .suggestion-name { color: var(--text-muted); font-size: 0.78rem; }
+    .api-panel {
+      background: #111827;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      background: #334155;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="toolbar">
+    <div>
+      <h2>📊 多市場投資與元大證金質押系統</h2>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        即時匯率：<span id="rateDisplay" style="color: #38bdf8; font-weight: bold;">連線中...</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <span id="syncStatus" class="status-badge">就緒</span>
+      <button class="btn btn-success btn-sm" onclick="fetchLiveQuotes()">⚡ 更新現價</button>
+      <button class="btn btn-info btn-sm" onclick="uploadToCloud()">☁️ 雲端同步</button>
+      <button class="btn btn-secondary btn-sm" onclick="fetchFromCloud()">🔄 讀取雲端</button>
+      <button class="btn btn-warning btn-sm" onclick="exportBackupJSON()">💾 本機備份</button>
+      <button class="btn btn-secondary btn-sm" onclick="triggerRestoreJSON()">📂 還原</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleApiSettings()">🔑 雲端 / Key 設定</button>
+      <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
+    </div>
+  </div>
+
+  <!-- 雲端同步與 API Key 設定 -->
+  <div id="apiConfigCard" class="card api-panel" style="display: none;">
+    <h3 style="font-size: 0.95rem; color: #38bdf8;">☁️ JSONBin 跨裝置雲端同步設定 (手機與電腦連動)</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>JSONBin Master Key (API Key)</label>
+        <input type="text" id="jsonbinKeyInput" placeholder="貼入你的 $2a$10$... Master Key">
+      </div>
+      <div class="form-group">
+        <label>JSONBin Bin ID</label>
+        <input type="text" id="jsonbinBinIdInput" placeholder="貼入你的 Bin ID (例: 66e...)">
+      </div>
+      <div class="form-group">
+        <label>Twelve Data Key (美股即時報價)</label>
+        <input type="text" id="twelveDataKeyInput" placeholder="選填 Twelve Data Key">
+      </div>
+      <div class="form-group">
+        <label>Finnhub Key (美股備用報價)</label>
+        <input type="text" id="finnhubKeyInput" placeholder="選填 Finnhub Key">
+      </div>
+      <div class="form-group full-width" style="margin-top: 8px;">
+        <button class="btn" type="button" onclick="saveApiKeys()">儲存設定並同步</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 總資產與庫存總值統計卡片 (5 大面板) -->
+  <div class="summary-grid">
+    <div class="stat-box" style="border-left: 4px solid #f59e0b;">
+      <div class="stat-label">全資產庫存總值 (TWD)</div>
+      <div class="stat-value" id="totalAllTWD" style="color:#f59e0b;">NT$ 0</div>
+      <div class="stat-profit" id="profitAllTWD">損益: NT$ 0 (0.00%)</div>
+      <div class="sub-value">含台股及美股匯率折算</div>
+    </div>
+
+    <div class="stat-box" style="border-left: 4px solid #10b981;">
+      <div class="stat-label">個人淨資產總值 (資產 - 負債)</div>
+      <div class="stat-value" id="netWorthTWD" style="color:#10b981;">NT$ 0</div>
+      <div class="sub-value" id="netWorthSub">已扣除質押借款與累計利息</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-label">台股庫存總值 (TWD)</div>
+      <div class="stat-value" id="totalTW">NT$ 0</div>
+      <div class="stat-profit" id="profitTW">損益: NT$ 0 (0.00%)</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-label">美股直投 (USD)</div>
+      <div class="stat-value" id="totalUS">$ 0.00</div>
+      <div class="stat-profit" id="profitUS">損益: $ 0.00 (0.00%)</div>
+      <div class="sub-value" id="totalUS_TWD">約 NT$ 0</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-label">美股複委託 (USD)</div>
+      <div class="stat-value" id="totalSub">$ 0.00</div>
+      <div class="stat-profit" id="profitSub">損益: $ 0.00 (0.00%)</div>
+      <div class="sub-value" id="totalSub_TWD">約 NT$ 0</div>
+    </div>
+  </div>
+
+  <!-- 質押負債概況橫幅 -->
+  <div class="summary-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="stat-box" style="border-left: 4px solid #ef4444;">
+      <div class="stat-label">元大證金借款總額 (質押負債)</div>
+      <div class="stat-value" id="totalPledgeLoan" style="color:#ef4444;">NT$ 0</div>
+      <div class="sub-value" id="totalPledgeInterest">累計應繳利息: NT$ 0</div>
+    </div>
+    <div class="stat-box" style="border-left: 4px solid #3b82f6;">
+      <div class="stat-label">元大證金整戶維持率 (官方含息公式)</div>
+      <div class="stat-value" id="totalPledgeRatio">0.00%</div>
+      <div class="sub-value" id="pledgeBufferText">追繳警戒緩衝: --</div>
+    </div>
+  </div>
+
+  <!-- 元大證金股票質押合約監控 -->
+  <div class="card" style="border: 1px solid #3b82f6;">
+    <div class="toolbar">
+      <div>
+        <h3 style="color:#60a5fa;">🏛️ 元大證金質押管理 (維持率：擔保市值 ÷ (本金 + 利息))</h3>
+        <span style="font-size:0.8rem; color:var(--text-muted);">
+          追繳防線：<strong>130%</strong> ｜ 系統警戒：<strong>140%</strong> ｜ 安全水位：<strong>166% 以上</strong>
+        </span>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="togglePledgeForm()">➕ 新增質押合約</button>
+    </div>
+
+    <!-- 質押輸入表單 -->
+    <div id="pledgeFormCard" style="display:none; background:#111827; padding:14px; border-radius:8px; margin-bottom:14px;">
+      <form id="pledgeForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>質押撥款日期</label>
+            <input type="date" id="pledgeDate" required>
+          </div>
+          <div class="form-group">
+            <label>擔保品台股代號 (支援智慧搜尋)</label>
+            <input type="text" id="pledgeSymbol" placeholder="例如: 0050, 006208, 台積電" required autocomplete="off" oninput="handlePledgeSymbolInput(this.value)">
+            <div id="pledgeSuggestionsBox" class="suggestions-box"></div>
+          </div>
+          <div class="form-group">
+            <label>質押擔保股數 (股)</label>
+            <input type="number" id="pledgeShares" min="1" placeholder="例如 10000" required>
+          </div>
+          <div class="form-group">
+            <label>借款本金 (TWD)</label>
+            <input type="number" id="pledgeLoan" min="1000" placeholder="借款台幣本金" required>
+          </div>
+          <div class="form-group">
+            <label>當前生效年利率 (%)</label>
+            <input type="number" id="pledgeRate" step="0.001" min="0.01" value="3.920" required>
+          </div>
+          <div class="form-group">
+            <label>初始/已累計基準利息 (TWD)</label>
+            <input type="number" id="pledgeBaseInterest" step="1" min="0" value="0" placeholder="過去已結算利息">
+          </div>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button type="submit" class="btn btn-sm">確認加入質押清單</button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="togglePledgeForm()">取消</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 質押合約明細清單 -->
+    <div class="table-container">
+      <table id="pledgeTable">
+        <thead>
+          <tr>
+            <th>撥款日期</th>
+            <th>擔保標的</th>
+            <th>質押股數</th>
+            <th>借款本金</th>
+            <th>擔保現值</th>
+            <th>維持率 (含息)</th>
+            <th>追繳緩衝</th>
+            <th>當前利率</th>
+            <th>基準利息</th>
+            <th>新階段每日增加</th>
+            <th>目前總累計利息</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 庫存明細表 -->
+  <div class="card">
+    <div class="toolbar">
+      <h3>📈 即時持股庫存表</h3>
+      <div class="filter-tabs">
+        <button class="tab-btn active" onclick="setFilter('ALL', this)">全部</button>
+        <button class="tab-btn" onclick="setFilter('TW', this)">台股</button>
+        <button class="tab-btn" onclick="setFilter('US_DIRECT', this)">美股</button>
+        <button class="tab-btn" onclick="setFilter('US_SUB', this)">複委託</button>
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <table id="portfolioTable">
+        <thead>
+          <tr>
+            <th>管道</th>
+            <th>標的代碼</th>
+            <th>總持股數</th>
+            <th>買入均價</th>
+            <th>最新現價</th>
+            <th>總市值 (原幣)</th>
+            <th>折合台幣 (TWD)</th>
+            <th>未實現損益</th>
+            <th>報酬率</th>
+            <th>管理</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新增持股表單 -->
+  <div class="card">
+    <h3>📝 新增 / 異動持股 (非質押之日常交易)</h3>
+    <form id="tradeForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>投資方式</label>
+          <select id="channel" required onchange="handleChannelChange()">
+            <option value="TW">🇹🇼 台股現股 (FinMind)</option>
+            <option value="US_DIRECT">🇺🇸 美股海外券商</option>
+            <option value="US_SUB">🏛️ 美股複委託</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>交易年月</label>
+          <input type="month" id="tradeDate" required>
+        </div>
+        <div class="form-group">
+          <label>標的代號 (輸入關鍵字搜尋)</label>
+          <input type="text" id="symbol" placeholder="例: VOO, 2330, 台積電" required autocomplete="off" oninput="handleSymbolInput(this.value)">
+          <div id="suggestionsBox" class="suggestions-box"></div>
+        </div>
+        <div class="form-group">
+          <label>操作類型</label>
+          <select id="tradeType">
+            <option value="BUY">買入 / 定期定額增持 (+)</option>
+            <option value="SELL">賣出 / 贖回 (-)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>成交股數</label>
+          <input type="number" id="shares" step="any" min="0.0001" placeholder="股數" required>
+        </div>
+        <div class="form-group">
+          <label>成交單價 (TWD/USD，可至三位小數)</label>
+          <input type="number" id="price" step="0.001" min="0.001" placeholder="例: 180.525" required>
+        </div>
+      </div>
+      <div style="margin-top: 14px;">
+        <button type="submit" class="btn" style="width: 100%;">儲存並加入庫存</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 歷史交易紀錄 -->
+  <div class="card">
+    <h3>📋 異動紀錄</h3>
+    <div class="table-container">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>通路</th>
+            <th>標的</th>
+            <th>操作</th>
+            <th>股數</th>
+            <th>單價</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  let trades = JSON.parse(localStorage.getItem('open_portfolio_trades_v3') || '[]');
+  let pledges = JSON.parse(localStorage.getItem('open_portfolio_pledges_v4') || '[]');
+  let currentQuotes = JSON.parse(localStorage.getItem('open_portfolio_quotes_v3') || '{}');
+  let currentFilter = 'ALL';
+  
+  let finnhubKey = localStorage.getItem('app_finnhub_key') || '';
+  let twelveDataKey = localStorage.getItem('app_twelvedata_key') || '';
+  let usdtwdRate = parseFloat(localStorage.getItem('app_usdtwd_rate') || '32.0');
+  let jsonbinKey = localStorage.getItem('app_jsonbin_key') || '';
+  let jsonbinBinId = localStorage.getItem('app_jsonbin_bin_id') || '';
+
+  document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 7);
+  document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('finnhubKeyInput').value = finnhubKey;
+  document.getElementById('twelveDataKeyInput').value = twelveDataKey;
+  document.getElementById('jsonbinKeyInput').value = jsonbinKey;
+  document.getElementById('jsonbinBinIdInput').value = jsonbinBinId;
+
+  const CHANNEL_CONFIG = {
+    'TW': { label: '台股', badge: 'badge-tw', curr: 'NT$' },
+    'US_DIRECT': { label: '美股', badge: 'badge-us', curr: '$' },
+    'US_SUB': { label: '複委託', badge: 'badge-sub', curr: '$' }
+  };
+
+  const STOCK_DATABASE = {
+    'US': [
+      { sym: 'VOO', name: 'Vanguard S&P 500 ETF' },
+      { sym: 'VTI', name: 'Vanguard Total Stock Market ETF' },
+      { sym: 'QQQ', name: 'Invesco QQQ Trust' },
+      { sym: 'VT', name: 'Vanguard Total World Stock ETF' },
+      { sym: 'AAPL', name: 'Apple Inc.' },
+      { sym: 'NVDA', name: 'NVIDIA Corporation' },
+      { sym: 'GOOGL', name: 'Alphabet Inc.' }
+    ],
+    'TW': [
+      { sym: '0050', name: '元大台灣50' },
+      { sym: '006208', name: '富邦台50' },
+      { sym: '00631L', name: '元大台灣50正2' },
+      { sym: '2330', name: '台積電' },
+      { sym: '2317', name: '鴻海' },
+      { sym: '2454', name: '聯發科' }
+    ]
+  };
+
+  function togglePledgeForm() {
+    const el = document.getElementById('pledgeFormCard');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // ===================== 雲端同步 (JSONBin API) =====================
+  async function uploadToCloud(silent = false) {
+    if (!jsonbinKey || !jsonbinBinId) {
+      if (!silent) alert('請先點「🔑 雲端 / Key 設定」填入 JSONBin Key 與 Bin ID！');
+      return;
+    }
+    const syncBadge = document.getElementById('syncStatus');
+    syncBadge.innerText = '雲端同步中...';
+    syncBadge.style.color = '#38bdf8';
+
+    const payload = {
+      updatedAt: new Date().toISOString(),
+      trades: trades,
+      pledges: pledges,
+      quotes: currentQuotes
+    };
+
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': jsonbinKey
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        syncBadge.innerText = '已與雲端同步';
+        syncBadge.style.color = '#22c55e';
+        if (!silent) alert('✅ 雲端同步成功！手機打開即可拉取最新資料。');
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (e) {
+      syncBadge.innerText = '同步失敗';
+      syncBadge.style.color = '#ef4444';
+      if (!silent) alert('❌ 雲端同步失敗，請確認 API Key 與 Bin ID 是否正確。');
+    }
+  }
+
+  async function fetchFromCloud() {
+    if (!jsonbinKey || !jsonbinBinId) {
+      alert('請先點「🔑 雲端 / Key 設定」填入 JSONBin Key 與 Bin ID！');
+      return;
+    }
+    const syncBadge = document.getElementById('syncStatus');
+    syncBadge.innerText = '下載雲端資料...';
+    syncBadge.style.color = '#38bdf8';
+
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}/latest`, {
+        headers: { 'X-Master-Key': jsonbinKey }
+      });
+      const json = await res.json();
+      if (json.record && (json.record.trades || json.record.pledges)) {
+        trades = json.record.trades || [];
+        pledges = json.record.pledges || [];
+        currentQuotes = json.record.quotes || currentQuotes;
+
+        localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
+        localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+        localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+
+        render();
+        fetchLiveQuotes();
+        syncBadge.innerText = '已載入最新雲端';
+        syncBadge.style.color = '#22c55e';
+        alert('✅ 已成功自雲端拉取最新資料！');
+      } else {
+        alert('雲端無有效紀錄或格式不符');
+      }
+    } catch (e) {
+      alert('❌ 讀取雲端失敗，請檢查網路或金鑰');
+    }
+  }
+
+  // ===================== 核心利息動態演算法 =====================
+  function calculatePledgeDynamicInterest(p) {
+    const today = new Date();
+    const baseDate = new Date(p.lastAdjustDate || p.date);
+    const daysSinceAdjust = Math.max(0, Math.floor((today - baseDate) / (1000 * 60 * 60 * 24)));
+    const loan = parseFloat(p.loan);
+    const rate = parseFloat(p.currentRate) / 100;
+    const dailyInterest = (loan * rate) / 365;
+    const incrementalInterest = Math.round(dailyInterest * daysSinceAdjust);
+    const baseInterest = parseFloat(p.baseInterest || 0);
+    const totalInterest = baseInterest + incrementalInterest;
+    return { dailyInterest: Math.round(dailyInterest), daysSinceAdjust, incrementalInterest, totalInterest };
+  }
+
+  function editPledgeRate(idx) {
+    const p = pledges[idx];
+    const newRateStr = prompt(`請輸入 ${p.symbol} 最新年利率 (%)：`, p.currentRate);
+    if (newRateStr !== null && !isNaN(parseFloat(newRateStr))) {
+      const newRate = parseFloat(newRateStr);
+      const calc = calculatePledgeDynamicInterest(p);
+      p.baseInterest = calc.totalInterest;
+      p.lastAdjustDate = new Date().toISOString().slice(0, 10);
+      p.currentRate = newRate;
+      localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+      render();
+      uploadToCloud(true);
+    }
+  }
+
+  function editPledgeBaseInterest(idx) {
+    const p = pledges[idx];
+    const calc = calculatePledgeDynamicInterest(p);
+    const newValStr = prompt(`校正 ${p.symbol} 累計利息 (直接對齊對帳單)：`, calc.totalInterest);
+    if (newValStr !== null && !isNaN(parseFloat(newValStr))) {
+      p.baseInterest = parseFloat(newValStr);
+      p.lastAdjustDate = new Date().toISOString().slice(0, 10);
+      localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+      render();
+      uploadToCloud(true);
+    }
+  }
+
+  function renderPledges() {
+    const tbody = document.querySelector('#pledgeTable tbody');
+    tbody.innerHTML = '';
+    let sumLoan = 0, sumCollateralVal = 0, sumAccruedInterest = 0;
+
+    pledges.forEach((p, idx) => {
+      const quotePrice = currentQuotes[p.symbol] || 0;
+      const collateralVal = p.shares * quotePrice;
+      const loan = parseFloat(p.loan);
+      const { dailyInterest, daysSinceAdjust, incrementalInterest, totalInterest } = calculatePledgeDynamicInterest(p);
+      const totalDebt = loan + totalInterest;
+      const ratio = totalDebt > 0 ? (collateralVal / totalDebt * 100) : 0;
+
+      let dropToCallText = '--';
+      if (ratio > 130) {
+        const dropPercent = ((ratio - 130) / ratio * 100).toFixed(1);
+        dropToCallText = `跌 ${dropPercent}% 到 130%`;
+      } else if (ratio > 0) {
+        dropToCallText = `<span style="color:#ef4444;font-weight:bold;">已跌破 130%!</span>`;
+      }
+
+      let badgeClass = 'pledge-safe';
+      if (ratio < 130) badgeClass = 'pledge-danger';
+      else if (ratio < 166) badgeClass = 'pledge-warn';
+
+      sumLoan += loan;
+      sumCollateralVal += collateralVal;
+      sumAccruedInterest += totalInterest;
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.date}</td>
+          <td><strong>${p.symbol}</strong></td>
+          <td>${p.shares.toLocaleString()}</td>
+          <td style="color:#ef4444;font-weight:bold;">NT$ ${loan.toLocaleString()}</td>
+          <td>NT$ ${Math.round(collateralVal).toLocaleString()}</td>
+          <td><span class="badge ${badgeClass}">${ratio.toFixed(2)}%</span></td>
+          <td style="font-size:0.8rem;">${dropToCallText}</td>
+          <td>
+            <strong>${parseFloat(p.currentRate).toFixed(3)}%</strong>
+            <button class="btn btn-secondary btn-sm" style="font-size:0.7rem;padding:2px 4px;margin-left:4px;" onclick="editPledgeRate(${idx})">改利率</button>
+          </td>
+          <td>NT$ ${parseFloat(p.baseInterest || 0).toLocaleString()}</td>
+          <td style="font-size:0.82rem;color:#38bdf8;">
+            +NT$ ${incrementalInterest.toLocaleString()} <span style="color:var(--text-muted);">(${daysSinceAdjust}天)</span>
+          </td>
+          <td style="color:#f59e0b;font-weight:bold;">
+            NT$ ${totalInterest.toLocaleString()}
+            <button class="btn btn-secondary btn-sm" style="font-size:0.7rem;padding:2px 4px;margin-left:4px;" onclick="editPledgeBaseInterest(${idx})">校正</button>
+          </td>
+          <td><button class="btn btn-secondary btn-sm" onclick="deletePledge(${idx})">刪除</button></td>
+        </tr>
+      `;
+    });
+
+    const totalAllDebt = sumLoan + sumAccruedInterest;
+    const totalRatio = totalAllDebt > 0 ? (sumCollateralVal / totalAllDebt * 100) : 0;
+    const ratioEl = document.getElementById('totalPledgeRatio');
+    const bufferEl = document.getElementById('pledgeBufferText');
+
+    ratioEl.innerText = totalAllDebt > 0 ? `${totalRatio.toFixed(2)}%` : '--';
+    if (totalAllDebt > 0) {
+      if (totalRatio < 130) {
+        ratioEl.style.color = '#ef4444';
+        bufferEl.innerHTML = `<span style="color:#ef4444;font-weight:bold;">⚠️ 整戶跌破 130% 追繳防線！</span>`;
+      } else if (totalRatio < 166) {
+        ratioEl.style.color = '#f59e0b';
+        const buffer = ((totalRatio - 130) / totalRatio * 100).toFixed(1);
+        bufferEl.innerText = `緩衝空間：整戶擔保再跌 ${buffer}% 觸發追繳`;
+      } else {
+        ratioEl.style.color = '#22c55e';
+        const buffer = ((totalRatio - 130) / totalRatio * 100).toFixed(1);
+        bufferEl.innerText = `整戶安全（耐跌約 ${buffer}%）`;
+      }
+    } else {
+      ratioEl.style.color = 'var(--text)';
+      bufferEl.innerText = '目前無未結清質押';
+    }
+
+    document.getElementById('totalPledgeLoan').innerText = `NT$ ${Math.round(sumLoan).toLocaleString()}`;
+    document.getElementById('totalPledgeInterest').innerText = `累計應繳利息: NT$ ${Math.round(sumAccruedInterest).toLocaleString()}`;
+    return { sumLoan, sumAccruedInterest };
+  }
+
+  function handleSymbolInput(val) {
+    const box = document.getElementById('suggestionsBox');
+    const channel = document.getElementById('channel').value;
+    const market = channel === 'TW' ? 'TW' : 'US';
+    const keyword = val.trim().toUpperCase();
+    if (!keyword) { box.style.display = 'none'; return; }
+    const list = STOCK_DATABASE[market] || [];
+    const filtered = list.filter(item => item.sym.toUpperCase().includes(keyword) || item.name.toUpperCase().includes(keyword));
+    if (filtered.length === 0) { box.style.display = 'none'; return; }
+    box.innerHTML = filtered.map(item => `
+      <div class="suggestion-item" onclick="selectSuggestion('${item.sym}')">
+        <strong>${item.sym}</strong>
+        <span class="suggestion-name">${item.name}</span>
+      </div>
+    `).join('');
+    box.style.display = 'block';
+  }
+
+  function selectSuggestion(sym) {
+    document.getElementById('symbol').value = sym;
+    document.getElementById('suggestionsBox').style.display = 'none';
+  }
+
+  function handlePledgeSymbolInput(val) {
+    const box = document.getElementById('pledgeSuggestionsBox');
+    const keyword = val.trim().toUpperCase();
+    if (!keyword) { box.style.display = 'none'; return; }
+    const list = STOCK_DATABASE['TW'] || [];
+    const filtered = list.filter(item => item.sym.toUpperCase().includes(keyword) || item.name.toUpperCase().includes(keyword));
+    if (filtered.length === 0) { box.style.display = 'none'; return; }
+    box.innerHTML = filtered.map(item => `
+      <div class="suggestion-item" onclick="selectPledgeSuggestion('${item.sym}')">
+        <strong>${item.sym}</strong>
+        <span class="suggestion-name">${item.name}</span>
+      </div>
+    `).join('');
+    box.style.display = 'block';
+  }
+
+  function selectPledgeSuggestion(sym) {
+    document.getElementById('pledgeSymbol').value = sym;
+    document.getElementById('pledgeSuggestionsBox').style.display = 'none';
+  }
+
+  function handleChannelChange() {
+    document.getElementById('symbol').value = '';
+    document.getElementById('suggestionsBox').style.display = 'none';
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#symbol') && !e.target.closest('#suggestionsBox')) {
+      document.getElementById('suggestionsBox').style.display = 'none';
+    }
+    if (!e.target.closest('#pledgeSymbol') && !e.target.closest('#pledgeSuggestionsBox')) {
+      document.getElementById('pledgeSuggestionsBox').style.display = 'none';
+    }
+  });
+
+  async function fetchRealtimeRate() {
+    if (twelveDataKey) {
+      try {
+        const res = await fetch(`https://api.twelvedata.com/exchange_rate?symbol=USD/TWD&apikey=${twelveDataKey}`);
+        const data = await res.json();
+        if (data && data.rate) {
+          usdtwdRate = parseFloat(data.rate);
+          localStorage.setItem('app_usdtwd_rate', usdtwdRate);
+          document.getElementById('rateDisplay').innerText = `1 USD ≈ ${usdtwdRate.toFixed(2)} TWD`;
+          render();
+          return;
+        }
+      } catch (err) {}
+    }
+    try {
+      const res = await fetch('https://open.er-api.com/v6/latest/USD');
+      const data = await res.json();
+      if (data?.rates?.TWD) {
+        usdtwdRate = parseFloat(data.rates.TWD);
+        localStorage.setItem('app_usdtwd_rate', usdtwdRate);
+        document.getElementById('rateDisplay').innerText = `1 USD ≈ ${usdtwdRate.toFixed(2)} TWD`;
+        render();
+        return;
+      }
+    } catch (e) {}
+  }
+
+  function toggleApiSettings() {
+    const el = document.getElementById('apiConfigCard');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function saveApiKeys() {
+    finnhubKey = document.getElementById('finnhubKeyInput').value.trim();
+    twelveDataKey = document.getElementById('twelveDataKeyInput').value.trim();
+    jsonbinKey = document.getElementById('jsonbinKeyInput').value.trim();
+    jsonbinBinId = document.getElementById('jsonbinBinIdInput').value.trim();
+
+    localStorage.setItem('app_finnhub_key', finnhubKey);
+    localStorage.setItem('app_twelvedata_key', twelveDataKey);
+    localStorage.setItem('app_jsonbin_key', jsonbinKey);
+    localStorage.setItem('app_jsonbin_bin_id', jsonbinBinId);
+
+    alert('設定已儲存！');
+    fetchRealtimeRate();
+    fetchLiveQuotes();
+  }
+
+  function calculateHoldings() {
+    const holdings = {};
+    const sorted = [...trades].sort((a, b) => new Date(a.date) - new Date(b.date));
+    sorted.forEach(t => {
+      const sym = t.symbol.toUpperCase();
+      const key = `${t.channel}_${sym}`;
+      if (!holdings[key]) {
+        holdings[key] = { channel: t.channel, symbol: sym, shares: 0, totalCost: 0 };
+      }
+      const h = holdings[key];
+      const count = parseFloat(t.shares);
+      const pr = parseFloat(t.price);
+      if (t.type === 'BUY') {
+        h.shares += count;
+        h.totalCost += (count * pr);
+      } else if (t.type === 'SELL') {
+        if (h.shares > 0) {
+          const avgCost = h.totalCost / h.shares;
+          h.shares = Math.max(0, h.shares - count);
+          h.totalCost = h.shares * avgCost;
+        }
+      }
+    });
+    return holdings;
+  }
+
+  function formatProfitText(profit, cost, currPrefix) {
+    const isProfit = profit >= 0;
+    const sign = isProfit ? '+' : '-';
+    const absProfit = Math.abs(profit);
+    const roi = cost > 0 ? (profit / cost * 100) : 0;
+    const absRoi = Math.abs(roi).toFixed(2);
+    const profitClass = isProfit ? 'text-up' : 'text-down';
+    const profitStr = currPrefix === 'NT$' 
+      ? Math.round(absProfit).toLocaleString() 
+      : absProfit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return `<span class="${profitClass}">損益: ${sign}${currPrefix} ${profitStr} (${sign}${absRoi}%)</span>`;
+  }
+
+  function render(flashMap = {}) {
+    const holdings = calculateHoldings();
+    const tbody = document.querySelector('#portfolioTable tbody');
+    tbody.innerHTML = '';
+    let sumTW = 0, costTW = 0, sumUS = 0, costUS = 0, sumSub = 0, costSub = 0;
+
+    for (const [key, item] of Object.entries(holdings)) {
+      if (item.shares <= 0.00001) continue;
+      const info = CHANNEL_CONFIG[item.channel];
+      const avgCost = item.shares > 0 ? (item.totalCost / item.shares) : 0;
+      if (!currentQuotes[item.symbol]) currentQuotes[item.symbol] = avgCost;
+      const quotePrice = currentQuotes[item.symbol];
+      const marketValue = item.shares * quotePrice;
+      const profit = marketValue - item.totalCost;
+      const roi = item.totalCost > 0 ? (profit / item.totalCost * 100) : 0;
+      const marketValueTWD = (item.channel === 'TW') ? marketValue : (marketValue * usdtwdRate);
+
+      if (item.channel === 'TW') { sumTW += marketValue; costTW += item.totalCost; }
+      if (item.channel === 'US_DIRECT') { sumUS += marketValue; costUS += item.totalCost; }
+      if (item.channel === 'US_SUB') { sumSub += marketValue; costSub += item.totalCost; }
+
+      if (currentFilter !== 'ALL' && item.channel !== currentFilter) continue;
+      const isProfit = profit >= 0;
+      const profitClass = isProfit ? 'text-up' : 'text-down';
+      const sign = isProfit ? '+' : '';
+      const flash = flashMap[item.symbol];
+      const flashClass = flash === 'up' ? 'flash-up' : (flash === 'down' ? 'flash-down' : '');
+
+      tbody.innerHTML += `
+        <tr class="${flashClass}">
+          <td><span class="badge ${info.badge}">${info.label}</span></td>
+          <td><strong>${item.symbol}</strong></td>
+          <td>${item.shares.toLocaleString()}</td>
+          <td>${info.curr} ${avgCost.toFixed(3)}</td>
+          <td><strong>${info.curr} ${quotePrice.toFixed(3)}</strong></td>
+          <td>${info.curr} ${Math.round(marketValue).toLocaleString()}</td>
+          <td style="color:#38bdf8; font-weight:500;">NT$ ${Math.round(marketValueTWD).toLocaleString()}</td>
+          <td class="${profitClass}">${sign}${info.curr} ${Math.round(profit).toLocaleString()}</td>
+          <td class="${profitClass}">${sign}${roi.toFixed(2)}%</td>
+          <td><button class="btn btn-secondary btn-sm" onclick="manualEditPrice('${item.symbol}')">改價</button></td>
+        </tr>
+      `;
+    }
+
+    const profitTW = sumTW - costTW;
+    document.getElementById('totalTW').innerText = `NT$ ${Math.round(sumTW).toLocaleString()}`;
+    document.getElementById('profitTW').innerHTML = formatProfitText(profitTW, costTW, 'NT$');
+
+    const profitUS = sumUS - costUS;
+    document.getElementById('totalUS').innerText = `$ ${sumUS.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('profitUS').innerHTML = formatProfitText(profitUS, costUS, '$');
+    document.getElementById('totalUS_TWD').innerText = `約 NT$ ${Math.round(sumUS * usdtwdRate).toLocaleString()}`;
+
+    const profitSub = sumSub - costSub;
+    document.getElementById('totalSub').innerText = `$ ${sumSub.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('profitSub').innerHTML = formatProfitText(profitSub, costSub, '$');
+    document.getElementById('totalSub_TWD').innerText = `約 NT$ ${Math.round(sumSub * usdtwdRate).toLocaleString()}`;
+
+    const totalAllTWD = sumTW + ((sumUS + sumSub) * usdtwdRate);
+    const totalAllCostTWD = costTW + ((costUS + costSub) * usdtwdRate);
+    const profitAllTWD = totalAllTWD - totalAllCostTWD;
+    document.getElementById('totalAllTWD').innerText = `NT$ ${Math.round(totalAllTWD).toLocaleString()}`;
+    document.getElementById('profitAllTWD').innerHTML = formatProfitText(profitAllTWD, totalAllCostTWD, 'NT$');
+
+    const { sumLoan, sumAccruedInterest } = renderPledges();
+    const netWorth = totalAllTWD - sumLoan - sumAccruedInterest;
+    document.getElementById('netWorthTWD').innerText = `NT$ ${Math.round(netWorth).toLocaleString()}`;
+
+    renderHistory();
+    localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+  }
+
+  function renderHistory() {
+    const tbody = document.querySelector('#historyTable tbody');
+    tbody.innerHTML = '';
+    trades.slice().reverse().forEach((t, i) => {
+      const actualIndex = trades.length - 1 - i;
+      const info = CHANNEL_CONFIG[t.channel];
+      tbody.innerHTML += `
+        <tr>
+          <td>${t.date}</td>
+          <td><span class="badge ${info.badge}">${info.label}</span></td>
+          <td><strong>${t.symbol}</strong></td>
+          <td style="color:${t.type === 'BUY' ? '#ef4444':'#22c55e'}">${t.type === 'BUY' ? '買入' : '賣出'}</td>
+          <td>${parseFloat(t.shares).toLocaleString()}</td>
+          <td>${info.curr} ${parseFloat(t.price).toFixed(3)}</td>
+          <td><button class="btn btn-secondary btn-sm" onclick="deleteTrade(${actualIndex})">✕</button></td>
+        </tr>
+      `;
+    });
+  }
+
+  async function fetchLiveQuotes() {
+    const holdings = calculateHoldings();
+    const tradeSymbols = Object.keys(holdings).map(k => holdings[k]);
+    const pledgeSymbols = pledges.map(p => ({ channel: 'TW', symbol: p.symbol.toUpperCase() }));
+    const allSymbolsMap = {};
+    [...tradeSymbols, ...pledgeSymbols].forEach(item => { allSymbolsMap[item.symbol] = item; });
+    const symbols = Object.values(allSymbolsMap);
+    if (symbols.length === 0) return;
+
+    const statusEl = document.getElementById('syncStatus');
+    statusEl.innerText = '更新中...';
+    statusEl.style.color = '#38bdf8';
+    const flashMap = {};
+    let successCount = 0;
+
+    for (const item of symbols) {
+      const sym = item.symbol;
+      const oldPrice = currentQuotes[sym] || 0;
+      let newPrice = null;
+      try {
+        if (item.channel === 'TW') {
+          const today = new Date();
+          const startDate = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+          const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${sym}&start_date=${startDate}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data?.data?.length > 0) {
+            const latest = data.data[data.data.length - 1];
+            if (latest.close) newPrice = parseFloat(latest.close);
+          }
+        } else {
+          if (twelveDataKey) {
+            try {
+              const tdRes = await fetch(`https://api.twelvedata.com/price?symbol=${sym}&apikey=${twelveDataKey}`);
+              const tdData = await tdRes.json();
+              if (tdData?.price) newPrice = parseFloat(tdData.price);
+            } catch (err) {}
+          }
+          if (!newPrice && finnhubKey) {
+            const fhRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${finnhubKey}`);
+            const fhData = await fhRes.json();
+            if (fhData?.c && fhData.c > 0) newPrice = parseFloat(fhData.c);
+          }
+        }
+      } catch (err) {}
+
+      if (newPrice && !isNaN(newPrice)) {
+        successCount++;
+        if (newPrice > oldPrice) flashMap[sym] = 'up';
+        else if (newPrice < oldPrice) flashMap[sym] = 'down';
+        currentQuotes[sym] = newPrice;
+      }
+    }
+    statusEl.innerText = successCount > 0 ? `已同步 (${new Date().toLocaleTimeString()})` : '同步完成';
+    statusEl.style.color = successCount > 0 ? '#22c55e' : '#eab308';
+    render(flashMap);
+  }
+
+  document.getElementById('pledgeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const rateVal = parseFloat(document.getElementById('pledgeRate').value || '3.92');
+    const baseInterestVal = parseFloat(document.getElementById('pledgeBaseInterest').value || '0');
+    const pRecord = {
+      date: document.getElementById('pledgeDate').value,
+      symbol: document.getElementById('pledgeSymbol').value.trim().toUpperCase(),
+      shares: parseFloat(document.getElementById('pledgeShares').value),
+      loan: parseFloat(document.getElementById('pledgeLoan').value),
+      currentRate: rateVal,
+      baseInterest: baseInterestVal,
+      lastAdjustDate: new Date().toISOString().slice(0, 10)
+    };
+    pledges.push(pRecord);
+    localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+    togglePledgeForm();
+    render();
+    fetchLiveQuotes();
+    uploadToCloud(true);
+    document.getElementById('pledgeSymbol').value = '';
+    document.getElementById('pledgeShares').value = '';
+    document.getElementById('pledgeLoan').value = '';
+    document.getElementById('pledgeBaseInterest').value = '0';
+    document.getElementById('pledgeSuggestionsBox').style.display = 'none';
+  });
+
+  function deletePledge(idx) {
+    if (confirm('確定結清或刪除這筆質押借款紀錄？')) {
+      pledges.splice(idx, 1);
+      localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+      render();
+      uploadToCloud(true);
+    }
+  }
+
+  function exportBackupJSON() {
+    const backupData = {
+      version: '4.3',
+      exportDate: new Date().toISOString(),
+      trades: trades,
+      pledges: pledges,
+      quotes: currentQuotes,
+      finnhubKey: finnhubKey,
+      twelveDataKey: twelveDataKey
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `portfolio_pledge_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function triggerRestoreJSON() {
+    document.getElementById('restoreFileInput').click();
+  }
+
+  function handleRestoreFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data.trades || data.pledges) {
+          if (confirm(`確定覆蓋並還原歷史紀錄？`)) {
+            trades = data.trades || [];
+            pledges = data.pledges || [];
+            currentQuotes = data.quotes || {};
+            finnhubKey = data.finnhubKey || '';
+            twelveDataKey = data.twelveDataKey || '';
+            localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
+            localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+            localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+            localStorage.setItem('app_finnhub_key', finnhubKey);
+            localStorage.setItem('app_twelvedata_key', twelveDataKey);
+            render();
+            fetchLiveQuotes();
+            alert('還原成功！');
+            uploadToCloud(true);
+          }
+        }
+      } catch (err) { alert('解析備份檔案失敗'); }
+    };
+    reader.readAsText(file);
+    input.value = '';
+  }
+
+  document.getElementById('tradeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const sym = document.getElementById('symbol').value.trim().toUpperCase();
+    const inputPrice = parseFloat(document.getElementById('price').value);
+    const pr = Math.round(inputPrice * 1000) / 1000;
+    const record = {
+      channel: document.getElementById('channel').value,
+      date: document.getElementById('tradeDate').value,
+      symbol: sym,
+      type: document.getElementById('tradeType').value,
+      shares: parseFloat(document.getElementById('shares').value),
+      price: pr
+    };
+    trades.push(record);
+    localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
+    if (!currentQuotes[sym]) currentQuotes[sym] = pr;
+    render();
+    fetchLiveQuotes();
+    uploadToCloud(true);
+    document.getElementById('symbol').value = '';
+    document.getElementById('shares').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('suggestionsBox').style.display = 'none';
+  });
+
+  function deleteTrade(index) {
+    if (confirm('確定刪除此交易紀錄？')) {
+      trades.splice(index, 1);
+      localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
+      render();
+      uploadToCloud(true);
+    }
+  }
+
+  function manualEditPrice(symbol) {
+    const val = prompt(`手動輸入 ${symbol} 現價 (三位小數)：`, currentQuotes[symbol] ? currentQuotes[symbol].toFixed(3) : '');
+    if (val && !isNaN(val)) {
+      currentQuotes[symbol] = Math.round(parseFloat(val) * 1000) / 1000;
+      render({ [symbol]: 'up' });
+      uploadToCloud(true);
+    }
+  }
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  // 系統啟動流程
+  fetchRealtimeRate();
+  render();
+  if (jsonbinKey && jsonbinBinId) fetchFromCloud();
+  if (finnhubKey || twelveDataKey) fetchLiveQuotes();
+  setInterval(fetchRealtimeRate, 60000);
+</script>
+</body>
+</html>
