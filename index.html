@@ -32,7 +32,7 @@
       --up-red: #f43f5e;
       --down-green: #10b981;
       --gold: #fbbf24;
-      --nav-bg: rgba(13, 19, 33, 0.92);
+      --nav-bg: rgba(13, 19, 33, 0.96);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -43,7 +43,8 @@
       color: var(--text-main);
       margin: 0;
       padding: 0;
-      padding-bottom: calc(80px + env(safe-area-inset-bottom));
+      /* 預留底部安全高度，避免內容被大按鈕導航列遮擋 */
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
       letter-spacing: -0.01em;
     }
 
@@ -342,21 +343,24 @@
     }
     .suggestion-row:active { background: #1e293b; }
 
+    /* 📱 原生 App 底部導航欄 (放大且適配 iPhone 安全區版) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 62px;
-      padding-bottom: env(safe-area-inset-bottom);
+      height: calc(68px + env(safe-area-inset-bottom, 20px));
+      padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 4px);
+      padding-top: 8px;
       background: var(--nav-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       justify-content: space-around;
-      align-items: center;
+      align-items: flex-start;
       z-index: 50;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
     }
     .nav-btn {
       flex: 1;
@@ -366,14 +370,21 @@
       justify-content: center;
       color: var(--text-sub);
       cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 500;
-      gap: 3px;
-      height: 100%;
-      transition: color 0.15s;
+      font-size: 0.82rem; /* 字體放大提升可讀性 */
+      font-weight: 600;
+      gap: 5px; /* 圖示與文字間距 */
+      height: 48px;
+      transition: all 0.15s;
     }
-    .nav-btn svg { width: 22px; height: 22px; fill: currentColor; }
-    .nav-btn.active { color: var(--accent); font-weight: 700; }
+    .nav-btn svg {
+      width: 26px; /* 圖示放大至原生尺寸 */
+      height: 26px;
+      fill: currentColor;
+    }
+    .nav-btn.active {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
 
     .color-up { color: var(--up-red); }
     .color-down { color: var(--down-green); }
