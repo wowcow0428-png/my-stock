@@ -43,7 +43,6 @@
       color: var(--text-main);
       margin: 0;
       padding: 0;
-      /* 預留底部安全高度，避免內容被大按鈕導航列遮擋 */
       padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
       letter-spacing: -0.01em;
     }
@@ -54,11 +53,22 @@
       letter-spacing: -0.02em;
     }
 
+    @keyframes flashUp {
+      0% { background-color: rgba(244, 63, 94, 0.45); }
+      100% { background-color: transparent; }
+    }
+    @keyframes flashDown {
+      0% { background-color: rgba(16, 185, 129, 0.45); }
+      100% { background-color: transparent; }
+    }
+    .flash-up { animation: flashUp 0.8s ease-out; }
+    .flash-down { animation: flashDown 0.8s ease-out; }
+
     .app-header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 13, 22, 0.85);
+      background: rgba(9, 13, 22, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
@@ -227,7 +237,7 @@
       padding: 14px 16px;
       margin-bottom: 10px;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: background 0.18s ease;
     }
     .stock-card:hover {
       background: rgba(40, 53, 79, 0.65);
@@ -240,6 +250,7 @@
     }
     .stock-symbol-group { display: flex; align-items: center; gap: 8px; }
     .symbol-text { font-size: 1.05rem; font-weight: 800; color: #fff; }
+    .stock-name-tag { font-size: 0.82rem; color: #cbd5e1; font-weight: 500; }
     .tag-channel {
       font-size: 0.68rem;
       font-weight: 600;
@@ -248,7 +259,7 @@
       background: rgba(255,255,255,0.08);
       color: var(--text-muted);
     }
-    .stock-price-val { font-size: 1.02rem; font-weight: 700; text-align: right; }
+    .stock-price-val { font-size: 1.05rem; font-weight: 700; text-align: right; }
     .stock-detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -310,7 +321,6 @@
       color: #fff;
       font-size: 0.95rem;
       font-family: inherit;
-      transition: border 0.15s;
     }
     .form-input:focus, .form-select:focus {
       outline: none;
@@ -343,7 +353,7 @@
     }
     .suggestion-row:active { background: #1e293b; }
 
-    /* 📱 原生 App 底部導航欄 (放大且適配 iPhone 安全區版) */
+    /* 📱 原生 App 底部導航欄 */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -370,21 +380,14 @@
       justify-content: center;
       color: var(--text-sub);
       cursor: pointer;
-      font-size: 0.82rem; /* 字體放大提升可讀性 */
+      font-size: 0.82rem;
       font-weight: 600;
-      gap: 5px; /* 圖示與文字間距 */
+      gap: 5px;
       height: 48px;
       transition: all 0.15s;
     }
-    .nav-btn svg {
-      width: 26px; /* 圖示放大至原生尺寸 */
-      height: 26px;
-      fill: currentColor;
-    }
-    .nav-btn.active {
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
+    .nav-btn svg { width: 26px; height: 26px; fill: currentColor; }
+    .nav-btn.active { color: var(--accent); transform: translateY(-2px); }
 
     .color-up { color: var(--up-red); }
     .color-down { color: var(--down-green); }
@@ -402,7 +405,7 @@
     <div class="header-meta">
       <span class="pulse-dot"></span>
       <span id="rateMeta" class="num-font">USD ≈ 32.00</span>
-      <span id="syncStatus" style="font-size:0.75rem; color:var(--accent);">就緒</span>
+      <span id="syncStatus" style="font-size:0.75rem; color:var(--accent);">連線中...</span>
     </div>
   </header>
 
@@ -457,7 +460,7 @@
       </div>
 
       <div style="display:flex; gap:10px;">
-        <button class="btn" style="flex:1;" onclick="fetchLiveQuotes()">⚡ 立即更新現價</button>
+        <button class="btn" style="flex:1;" onclick="fetchAllQuotes(false)">⚡ 立即更新現價</button>
         <button class="btn btn-secondary" style="flex:1;" onclick="uploadToCloud()">☁️ 雲端同步</button>
       </div>
     </div>
@@ -466,7 +469,7 @@
     <div id="viewPortfolio" class="tab-view">
       <div class="card-header">
         <div class="card-title">📈 即時持股庫存</div>
-        <button class="btn btn-sm" onclick="fetchLiveQuotes()">⚡ 更新現價</button>
+        <button class="btn btn-sm" onclick="fetchAllQuotes(false)">⚡ 更新現價</button>
       </div>
 
       <div class="filter-pills">
@@ -518,14 +521,14 @@
           <div class="form-group">
             <label class="form-label">投資管道</label>
             <select class="form-select" id="channel" required onchange="handleChannelChange()">
-              <option value="TW">🇹🇼 台股現股 (證交所/FinMind 免費源)</option>
+              <option value="TW">🇹🇼 台股現股 (FinMind 證交所源)</option>
               <option value="US_DIRECT">🇺🇸 美股海外券商</option>
               <option value="US_SUB">🏛️ 美股複委託</option>
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">標的代號 (智慧快選)</label>
-            <input type="text" class="form-input num-font" id="symbol" placeholder="例: VOO, 2330, 台積電" required autocomplete="off" oninput="handleSymbolInput(this.value)">
+            <input type="text" class="form-input num-font" id="symbol" placeholder="例: VOO, 2330, TSLA, 0050" required autocomplete="off" oninput="handleSymbolInput(this.value)">
             <div id="suggestionsBox" class="suggestions-menu"></div>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -591,10 +594,19 @@
     <!-- 5. 設定 -->
     <div id="viewSettings" class="tab-view">
       <div class="card">
-        <div class="card-title">☁️ 跨裝置雲端同步 (JSONBin)</div>
-        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
-          在電腦與手機填入同一組 Key，隨時一鍵雙向連動。
+        <div class="card-title">⚡ 美股即時跳動核心 (Finnhub API Key)</div>
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+          方案 A 全時段架構：盤中由 WebSocket 串流毫秒跳動；收盤與週末自動讀取盤後最後撮合價，報價與 Firstrade 完美吻合！
         </div>
+        <div class="form-group">
+          <label class="form-label">Finnhub API Key</label>
+          <input type="text" class="form-input num-font" id="finnhubKeyInput" placeholder="貼入你的 Finnhub Key">
+        </div>
+        <button class="btn btn-sm" type="button" onclick="saveApiKeys()">儲存並啟動連線</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">☁️ 跨裝置雲端同步 (JSONBin)</div>
         <div class="form-group">
           <label class="form-label">JSONBin Master Key</label>
           <input type="text" class="form-input num-font" id="jsonbinKeyInput" placeholder="$2a$10$...">
@@ -607,19 +619,6 @@
           <button class="btn" type="button" onclick="saveApiKeys()">儲存設定</button>
           <button class="btn btn-secondary" type="button" onclick="fetchFromCloud()">讀取雲端資料</button>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🔑 外部行情 API Key (選填)</div>
-        <div class="form-group">
-          <label class="form-label">Twelve Data Key (美股即時行情)</label>
-          <input type="text" class="form-input num-font" id="twelveDataKeyInput" placeholder="選填 Twelve Data Key">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Finnhub Key (美股備用源)</label>
-          <input type="text" class="form-input num-font" id="finnhubKeyInput" placeholder="選填 Finnhub Key">
-        </div>
-        <button class="btn btn-sm btn-secondary" type="button" onclick="saveApiKeys()">更新行情金鑰</button>
       </div>
 
       <div class="card">
@@ -663,9 +662,9 @@
   let currentQuotes = JSON.parse(localStorage.getItem('open_portfolio_quotes_v3') || '{}');
   let currentFilter = 'ALL';
   let expandedKeys = new Set();
+  let flashStates = {};
 
   let finnhubKey = localStorage.getItem('app_finnhub_key') || '';
-  let twelveDataKey = localStorage.getItem('app_twelvedata_key') || '';
   let usdtwdRate = parseFloat(localStorage.getItem('app_usdtwd_rate') || '32.0');
   let jsonbinKey = localStorage.getItem('app_jsonbin_key') || '';
   let jsonbinBinId = localStorage.getItem('app_jsonbin_bin_id') || '';
@@ -674,26 +673,58 @@
   document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
   document.getElementById('jsonbinKeyInput').value = jsonbinKey;
   document.getElementById('jsonbinBinIdInput').value = jsonbinBinId;
-  document.getElementById('twelveDataKeyInput').value = twelveDataKey;
   document.getElementById('finnhubKeyInput').value = finnhubKey;
+
+  const KNOWN_ETFS = new Set(['VOO', 'QQQ', 'SPY', 'IVV', 'VTI', 'VT', 'DIA', 'IWM', 'SOXX', 'SMH']);
+
+  // 台股與美股內建名稱字典
+  const STOCK_NAMES = {
+    '0050': '元大台灣50',
+    '006208': '富邦台50',
+    '00631L': '元大台灣50正2',
+    '2330': '台積電',
+    '2317': '鴻海',
+    '2454': '聯發科',
+    '2308': '台達電',
+    '2324': '仁寶',
+    '2376': '技嘉',
+    '2327': '國巨',
+    '2382': '廣達',
+    'VOO': 'Vanguard S&P 500 ETF',
+    'QQQ': 'Invesco QQQ Trust',
+    'TSLA': 'Tesla, Inc.',
+    'NVDA': 'NVIDIA Corp.',
+    'GOOGL': 'Alphabet Inc.',
+    'AAPL': 'Apple Inc.',
+    'MSFT': 'Microsoft Corp.',
+    'TSM': 'TSMC ADR'
+  };
 
   const STOCK_DATABASE = {
     'US': [
       { sym: 'VOO', name: 'Vanguard S&P 500 ETF' },
       { sym: 'QQQ', name: 'Invesco QQQ Trust' },
-      { sym: 'VT', name: 'Vanguard Total World ETF' },
-      { sym: 'GOOGL', name: 'Alphabet Inc.' },
+      { sym: 'TSLA', name: 'Tesla, Inc.' },
       { sym: 'NVDA', name: 'NVIDIA Corporation' },
-      { sym: 'AAPL', name: 'Apple Inc.' }
+      { sym: 'GOOGL', name: 'Alphabet Inc.' },
+      { sym: 'AAPL', name: 'Apple Inc.' },
+      { sym: 'MSFT', name: 'Microsoft Corporation' }
     ],
     'TW': [
       { sym: '0050', name: '元大台灣50' },
       { sym: '006208', name: '富邦台50' },
       { sym: '00631L', name: '元大台灣50正2' },
       { sym: '2330', name: '台積電' },
-      { sym: '2317', name: '鴻海' }
+      { sym: '2317', name: '鴻海' },
+      { sym: '2454', name: '聯發科' },
+      { sym: '2324', name: '仁寶' },
+      { sym: '2327', name: '國巨' }
     ]
   };
+
+  function getStockDisplayName(sym) {
+    return STOCK_NAMES[sym.toUpperCase()] || '';
+  }
 
   function switchTab(viewId, el) {
     document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active-view'));
@@ -714,6 +745,189 @@
     renderPortfolioList();
   }
 
+  // ===================== 取得美股最新撮合價 (含盤後/盤前，解鎖 CORS) =====================
+  async function fetchUSQuoteExtended(sym) {
+    let price = null;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d&includePrePost=true`;
+    const targetUrl = encodeURIComponent(url);
+
+    // 嘗試透過 CORS 代理取得完整含盤後 (includePrePost=true) 的數據
+    try {
+      const res = await fetch(`https://api.allorigins.win/raw?url=${targetUrl}`);
+      const data = await res.json();
+      const resObj = data?.chart?.result?.[0];
+      const meta = resObj?.meta;
+      if (meta) {
+        if (meta.postMarketPrice) {
+          price = meta.postMarketPrice;
+        } else if (resObj?.indicators?.quote?.[0]?.close) {
+          const closes = resObj.indicators.quote[0].close.filter(p => p !== null && p > 0);
+          if (closes.length > 0) {
+            price = closes[closes.length - 1]; // 最後一筆撮合價 (包含盤後 20:00)
+          }
+        }
+        if (!price) price = meta.regularMarketPrice;
+      }
+    } catch (e) {}
+
+    // 第二代理備援
+    if (!price) {
+      try {
+        const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        const resObj = data?.chart?.result?.[0];
+        const meta = resObj?.meta;
+        if (meta) {
+          if (meta.postMarketPrice) {
+            price = meta.postMarketPrice;
+          } else if (resObj?.indicators?.quote?.[0]?.close) {
+            const closes = resObj.indicators.quote[0].close.filter(p => p !== null && p > 0);
+            if (closes.length > 0) {
+              price = closes[closes.length - 1];
+            }
+          }
+          if (!price) price = meta.regularMarketPrice;
+        }
+      } catch (e) {}
+    }
+
+    // 若代理全失敗，回退至 Finnhub
+    if (!price && finnhubKey) {
+      try {
+        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${finnhubKey}`);
+        const d = await res.json();
+        if (d && d.c > 0) price = parseFloat(d.c);
+      } catch (e) {}
+    }
+
+    return price ? parseFloat(price.toFixed(2)) : null;
+  }
+
+  // 3 秒高速輪詢 ETF
+  async function fetchETFQuotes() {
+    const holdings = calculateHoldings();
+    const symbols = Object.values(holdings).map(h => h.symbol);
+
+    for (const sym of symbols) {
+      if (KNOWN_ETFS.has(sym)) {
+        const newPrice = await fetchUSQuoteExtended(sym);
+        if (newPrice) {
+          const oldPrice = currentQuotes[sym] || newPrice;
+          if (newPrice !== oldPrice) {
+            flashStates[sym] = newPrice > oldPrice ? 'flash-up' : 'flash-down';
+            currentQuotes[sym] = newPrice;
+            render();
+            setTimeout(() => { delete flashStates[sym]; render(); }, 800);
+          }
+        }
+      }
+    }
+    localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+  }
+
+  // 全量報價更新
+  async function fetchAllQuotes(silent = true) {
+    const holdings = calculateHoldings();
+    const allSymbols = new Set([...Object.values(holdings).map(h => h.symbol), ...pledges.map(p => p.symbol)]);
+    if (allSymbols.size === 0) return;
+
+    const now = new Date();
+    const pastDate = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+    const startDateStr = pastDate.toISOString().slice(0, 10);
+
+    for (const sym of allSymbols) {
+      try {
+        const isTW = /^\d+/.test(sym);
+        if (isTW) {
+          const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${sym}&start_date=${startDateStr}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data && data.data && data.data.length > 0) {
+            const latest = data.data[data.data.length - 1];
+            if (latest.close) currentQuotes[sym] = parseFloat(latest.close);
+          }
+        } else {
+          const newPrice = await fetchUSQuoteExtended(sym);
+          if (newPrice) {
+            const oldPrice = currentQuotes[sym] || newPrice;
+            if (newPrice !== oldPrice) {
+              flashStates[sym] = newPrice > oldPrice ? 'flash-up' : 'flash-down';
+              currentQuotes[sym] = newPrice;
+              render();
+              setTimeout(() => { delete flashStates[sym]; render(); }, 800);
+            } else {
+              currentQuotes[sym] = newPrice;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+    render();
+  }
+
+  // ===================== WebSocket 個股毫秒串流 =====================
+  let socket = null;
+  function initWebSocket() {
+    if (!finnhubKey) {
+      document.getElementById('syncStatus').innerText = '未輸入 Finnhub Key';
+      document.getElementById('syncStatus').style.color = '#ef4444';
+      return;
+    }
+
+    if (socket) {
+      try { socket.close(); } catch(e){}
+    }
+
+    try {
+      socket = new WebSocket(`wss://ws.finnhub.io?token=${finnhubKey}`);
+
+      socket.addEventListener('open', () => {
+        document.getElementById('syncStatus').innerText = '● 即時連線中';
+        document.getElementById('syncStatus').style.color = '#10b981';
+
+        const holdings = calculateHoldings();
+        Object.values(holdings).forEach(h => {
+          const sym = h.symbol;
+          if (!/^\d+/.test(sym) && !KNOWN_ETFS.has(sym)) {
+            socket.send(JSON.stringify({ type: 'subscribe', symbol: sym }));
+          }
+        });
+      });
+
+      socket.addEventListener('message', (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === 'trade' && msg.data && msg.data.length > 0) {
+          msg.data.forEach(trade => {
+            const sym = trade.s;
+            const newPrice = parseFloat(trade.p);
+            const oldPrice = currentQuotes[sym] || newPrice;
+
+            if (newPrice !== oldPrice) {
+              flashStates[sym] = newPrice > oldPrice ? 'flash-up' : 'flash-down';
+              currentQuotes[sym] = newPrice;
+              render();
+              setTimeout(() => { delete flashStates[sym]; render(); }, 800);
+            }
+          });
+        }
+      });
+
+      socket.addEventListener('error', () => {
+        document.getElementById('syncStatus').innerText = '串流受阻 (轉為輪詢)';
+        document.getElementById('syncStatus').style.color = '#f59e0b';
+      });
+
+      socket.addEventListener('close', () => {
+        setTimeout(initWebSocket, 10000);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // ===================== 雲端同步 =====================
   async function uploadToCloud(silent = false) {
     if (!jsonbinKey || !jsonbinBinId) {
       if (!silent) { alert('請至「⚙️ 設定」輸入 JSONBin 金鑰'); switchTab('viewSettings'); }
@@ -754,7 +968,8 @@
         localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
         localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
         render();
-        fetchLiveQuotes();
+        fetchAllQuotes(false);
+        initWebSocket();
         alert('✅ 已載入雲端最新資料！');
       }
     } catch (e) { alert('❌ 讀取失敗'); }
@@ -816,6 +1031,8 @@
       const isUp = profit >= 0;
       const curr = item.channel === 'TW' ? 'NT$' : '$';
       const isOpen = expandedKeys.has(key);
+      const flashClass = flashStates[item.symbol] || '';
+      const stockName = getStockDisplayName(item.symbol);
 
       let batchesHtml = '';
       if (isOpen) {
@@ -842,10 +1059,11 @@
       }
 
       listEl.innerHTML += `
-        <div class="stock-card" onclick="toggleCardDrawer('${key}')">
+        <div class="stock-card ${flashClass}" onclick="toggleCardDrawer('${key}')">
           <div class="stock-main-row">
             <div class="stock-symbol-group">
               <span class="symbol-text">${item.symbol}</span>
+              ${stockName ? `<span class="stock-name-tag">${stockName}</span>` : ''}
               <span class="tag-channel">${item.channel}</span>
             </div>
             <div>
@@ -885,6 +1103,7 @@
       const { daily, days, inc, total } = calculatePledgeInterest(p);
       const totalDebt = loan + total;
       const ratio = totalDebt > 0 ? (colVal / totalDebt * 100) : 0;
+      const stockName = getStockDisplayName(p.symbol);
 
       sumLoan += loan;
       sumCollateral += colVal;
@@ -895,25 +1114,36 @@
           <div class="stock-main-row">
             <div class="stock-symbol-group">
               <span class="symbol-text">${p.symbol}</span>
+              ${stockName ? `<span class="stock-name-tag">${stockName}</span>` : ''}
               <span class="tag-channel">質押</span>
             </div>
-            <div class="num-font" style="font-size:1.1rem; font-weight:800; color:${ratio<130?'var(--up-red)':(ratio<166?'var(--gold)':'var(--down-green)')};">
-              ${ratio.toFixed(2)}%
+            <div style="text-align:right;">
+              <div class="num-font" style="font-size:1.15rem; font-weight:800; color:${ratio<130?'var(--up-red)':(ratio<166?'var(--gold)':'var(--down-green)')};">
+                ${ratio.toFixed(2)}%
+              </div>
+              <div class="num-font" style="font-size:0.75rem; color:var(--up-red); font-weight:700;">
+                借款 NT$ ${loan.toLocaleString()}
+              </div>
             </div>
           </div>
           <div class="stock-detail-grid num-font">
             <div>
-              <div class="detail-item-label">借款本金 / 當前利率</div>
-              <div class="detail-item-val" style="color:var(--up-red);">NT$ ${loan.toLocaleString()} (${p.currentRate}%)</div>
+              <div class="detail-item-label">擔保股數 / 當前市值</div>
+              <div class="detail-item-val">${p.shares.toLocaleString()} 股 (NT$ ${Math.round(colVal).toLocaleString()})</div>
             </div>
             <div style="text-align:right;">
-              <div class="detail-item-label">累計利息 (日息 NT$${daily})</div>
-              <div class="detail-item-val" style="color:var(--gold);">NT$ ${total.toLocaleString()}</div>
+              <div class="detail-item-label">累計利息 (年息 ${p.currentRate}%)</div>
+              <div class="detail-item-val" style="color:var(--gold);">NT$ ${total.toLocaleString()} (日息 NT$${daily})</div>
             </div>
           </div>
-          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editPledgeRate(${idx})">改利率</button>
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); deletePledge(${idx})">刪除</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px dashed rgba(255,255,255,0.06); padding-top:8px;">
+            <div style="font-size:0.72rem; color:var(--text-sub);">
+              撥款日: ${p.date}
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editPledgeRate(${idx})">改利率</button>
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); deletePledge(${idx})">結清/刪除</button>
+            </div>
           </div>
         </div>
       `;
@@ -980,81 +1210,6 @@
     renderPortfolioList();
   }
 
-  async function fetchLiveQuotes(silent = false) {
-    const holdings = calculateHoldings();
-    const allSymbols = new Set([...Object.values(holdings).map(h => h.symbol), ...pledges.map(p => p.symbol)]);
-    if (allSymbols.size === 0) return;
-
-    const statusEl = document.getElementById('syncStatus');
-    if (!silent) {
-      statusEl.innerText = '盤中更新中...';
-      statusEl.style.color = '#38bdf8';
-    }
-
-    const now = new Date();
-    const pastDate = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-    const startDateStr = pastDate.toISOString().slice(0, 10);
-    let updatedCount = 0;
-
-    for (const sym of allSymbols) {
-      try {
-        const isTW = /^\d+/.test(sym);
-        if (isTW) {
-          const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${sym}&start_date=${startDateStr}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          if (data && data.data && data.data.length > 0) {
-            const latest = data.data[data.data.length - 1];
-            if (latest.close) {
-              currentQuotes[sym] = parseFloat(latest.close);
-              updatedCount++;
-            }
-          }
-        } else {
-          let fetchedPrice = null;
-          if (finnhubKey) {
-            try {
-              const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${finnhubKey}`);
-              const d = await res.json();
-              if (d && d.c > 0) fetchedPrice = parseFloat(d.c);
-            } catch (e) {}
-          }
-
-          if (!fetchedPrice && twelveDataKey) {
-            try {
-              const res = await fetch(`https://api.twelvedata.com/price?symbol=${sym}&apikey=${twelveDataKey}`);
-              const d = await res.json();
-              if (d && d.price) fetchedPrice = parseFloat(d.price);
-            } catch (e) {}
-          }
-
-          if (!fetchedPrice) {
-            try {
-              const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1m&range=1d`);
-              const d = await res.json();
-              const meta = d?.chart?.result?.[0]?.meta;
-              if (meta && meta.regularMarketPrice) {
-                fetchedPrice = parseFloat(meta.regularMarketPrice);
-              }
-            } catch (e) {}
-          }
-
-          if (fetchedPrice) {
-            currentQuotes[sym] = fetchedPrice;
-            updatedCount++;
-          }
-        }
-      } catch (e) {
-        console.error('報價更新出錯:', sym, e);
-      }
-    }
-
-    localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
-    statusEl.innerText = `● 盤中連線 (${new Date().toLocaleTimeString().slice(0, 5)})`;
-    statusEl.style.color = '#10b981';
-    render();
-  }
-
   async function fetchRealtimeRate() {
     try {
       const res = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -1109,7 +1264,8 @@
     uploadToCloud(true);
     alert('已成功記帳！');
     switchTab('viewPortfolio');
-    fetchLiveQuotes();
+    fetchAllQuotes(false);
+    initWebSocket();
   });
 
   document.getElementById('pledgeForm').addEventListener('submit', (e) => {
@@ -1128,22 +1284,21 @@
     uploadToCloud(true);
     alert('質押借款登記完成！');
     switchTab('viewPledge');
-    fetchLiveQuotes();
+    fetchAllQuotes(false);
   });
 
   function saveApiKeys() {
+    finnhubKey = document.getElementById('finnhubKeyInput').value.trim();
     jsonbinKey = document.getElementById('jsonbinKeyInput').value.trim();
     jsonbinBinId = document.getElementById('jsonbinBinIdInput').value.trim();
-    twelveDataKey = document.getElementById('twelveDataKeyInput').value.trim();
-    finnhubKey = document.getElementById('finnhubKeyInput').value.trim();
 
+    localStorage.setItem('app_finnhub_key', finnhubKey);
     localStorage.setItem('app_jsonbin_key', jsonbinKey);
     localStorage.setItem('app_jsonbin_bin_id', jsonbinBinId);
-    localStorage.setItem('app_twelvedata_key', twelveDataKey);
-    localStorage.setItem('app_finnhub_key', finnhubKey);
 
-    alert('設定已儲存！');
-    fetchLiveQuotes();
+    alert('設定已儲存！即刻啟動即時行情');
+    fetchAllQuotes(false);
+    initWebSocket();
   }
 
   function setFilter(filter, btn) {
@@ -1186,7 +1341,7 @@
   }
 
   function exportBackupJSON() {
-    const blob = new Blob([JSON.stringify({ version: '6.2', trades, pledges, quotes: currentQuotes }, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify({ version: '8.5', trades, pledges, quotes: currentQuotes }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `portfolio_pro_${new Date().toISOString().slice(0,10)}.json`;
@@ -1207,22 +1362,26 @@
         localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
         render();
         uploadToCloud(true);
-        fetchLiveQuotes();
+        fetchAllQuotes(false);
+        initWebSocket();
         alert('還原完成！');
       } catch (err) { alert('檔案無效'); }
     };
     reader.readAsText(file);
   }
 
+  // 系統啟動流程
   render();
   fetchRealtimeRate();
-  fetchLiveQuotes();
+  fetchAllQuotes(false);
+  initWebSocket();
   if (jsonbinKey && jsonbinBinId) fetchFromCloud();
 
-  // 每 30 秒自動靜默更新現價 (支援美股盤中跳動)
-  setInterval(() => {
-    fetchLiveQuotes(true);
-  }, 30000);
+  // 每 3 秒極速輪詢一次 ETF 價格 (包含盤後最後撮合價)
+  setInterval(fetchETFQuotes, 3000);
+
+  // 每 30 秒全量刷新台股與美股最新價格
+  setInterval(() => { fetchAllQuotes(true); }, 30000);
 
   // 每 2 分鐘更新匯率
   setInterval(fetchRealtimeRate, 120000);
