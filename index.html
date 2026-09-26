@@ -92,11 +92,15 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(3, 7, 18, 0.85);
+      background: rgba(3, 7, 18, 0.88);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-subtle);
-      padding: 14px 20px;
+      /* 自動避開 iPhone 動態島 (Dynamic Island) 與瀏海高度 */
+      padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
+      padding-bottom: 12px;
+      padding-left: calc(env(safe-area-inset-left, 0px) + 20px);
+      padding-right: calc(env(safe-area-inset-right, 0px) + 20px);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -447,7 +451,7 @@
     /* 下拉刷新 (Pull-to-Refresh) 科技感動畫 */
     .ptr-box {
       position: fixed;
-      top: 0;
+      top: env(safe-area-inset-top, 0px);
       left: 0;
       right: 0;
       height: 60px;
@@ -484,10 +488,10 @@
     }
 
   
-    /* 自動更新 Toast 提示 */
+    /* 自動更新 Toast 提示 (避開動態島) */
     .update-toast {
       position: fixed;
-      top: 16px;
+      top: calc(env(safe-area-inset-top, 20px) + 12px);
       left: 18px;
       right: 18px;
       max-width: 480px;
