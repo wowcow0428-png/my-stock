@@ -3,62 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Capital & Pledge Pro</title>
+  <title>Capital & Pledge Terminal</title>
 
-  <!-- PWA 全螢幕與桌面圖示 -->
+  <!-- 專業金融級 PWA 圖示與全螢幕設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="資產質押">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#090d16">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2422/2422796.png">
+  <meta name="theme-color" content="#030712">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmdHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMTcyYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzA1MDgxNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjA2MTciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Im5lb25DeWFuIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM4YmRmOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjg0YzciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImFjY2VudEdsb3ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4IiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwZjE3MmEiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZUdyYWQiIHgxPSIwJSIgeTE9IjEwMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzgxOGNmOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgCiAgPCEtLSBPdXRlciBSb3VuZGVkIE1ldGFsbGljIFBsYXRlIC0tPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSJ1cmwoI2JnR3JhZCkiLz4KICA8cmVjdCB4PSIxLjUiIHk9IjEuNSIgd2lkdGg9IjUwOSIgaGVpZ2h0PSI1MDkiIHJ4PSIxMTYuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTIpIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxODAiIHI9IjE4MCIgZmlsbD0idXJsKCNhY2NlbnRHbG93KSIvPgoKICA8IS0tIEhpZ2gtVGVjaCBTaGllbGQgT3V0bGluZSAoUGxlZGdlICYgU2VjdXJpdHkpIC0tPgogIDxwYXRoIGQ9Ik0yNTYgOTAgTDM5MCAxNDggVjI1MCBDMzkwIDMzOCAzMzAgNDA1IDI1NiA0MzAgQzE4MiA0MDUgMTIyIDMzOCAxMjIgMjUwIFYxNDggWiIgCiAgICAgICAgZmlsbD0icmdiYSgxNSwgMjMsIDQyLCAwLjcpIiBzdHJva2U9InJnYmEoNTYsIDE4OSwgMjQ4LCAwLjQpIiBzdHJva2Utd2lkdGg9IjYiLz4KCiAgPCEtLSBRdWFudCBDYW5kbGVzdGljayAmIFRyYWplY3RvcnkgTGluZSAtLT4KICA8ZyBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPCEtLSBUZWNoIEdyaWQgTGluZXMgLS0+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMzIwIiB4Mj0iMzUyIiB5Mj0iMzIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMjQwIiB4Mj0iMzUyIiB5Mj0iMjQwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CgogICAgPCEtLSBDYW5kbGVzdGljayBiYXJzIC0tPgogICAgPGxpbmUgeDE9IjE5MCIgeTE9IjI5MCIgeDI9IjE5MCIgeTI9IjM0MCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjE4NCIgeT0iMzAwIiB3aWR0aD0iMTIiIGhlaWdodD0iMjUiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI0MCIgeTE9IjIzMCIgeDI9IjI0MCIgeTI9IjMxMCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjIzNCIgeT0iMjQ1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDAiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI5MCIgeTE9IjE4MCIgeDI9IjI5MCIgeTI9IjI3MCIgc3Ryb2tlPSIjMzhiZGY4IiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjI4NCIgeT0iMTk1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDUiIHJ4PSIzIiBmaWxsPSIjMzhiZGY4Ii8+CgogICAgPCEtLSBEeW5hbWljIE5lb24gR3Jvd3RoIEN1cnZlIC0tPgogICAgPHBhdGggZD0iTTE2NSAzMzAgUSAyMjAgMzEwLCAyNTAgMjQwIFQgMzUwIDE1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xpbmVHcmFkKSIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIAogICAgPCEtLSBSYWRpYW50IENyZXN0IFBvaW50IC0tPgogICAgPGNpcmNsZSBjeD0iMzUwIiBjeT0iMTU1IiByPSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwvZz4KPC9zdmc+">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmdHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMTcyYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzA1MDgxNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjA2MTciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Im5lb25DeWFuIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM4YmRmOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjg0YzciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImFjY2VudEdsb3ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4IiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwZjE3MmEiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZUdyYWQiIHgxPSIwJSIgeTE9IjEwMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzgxOGNmOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgCiAgPCEtLSBPdXRlciBSb3VuZGVkIE1ldGFsbGljIFBsYXRlIC0tPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSJ1cmwoI2JnR3JhZCkiLz4KICA8cmVjdCB4PSIxLjUiIHk9IjEuNSIgd2lkdGg9IjUwOSIgaGVpZ2h0PSI1MDkiIHJ4PSIxMTYuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTIpIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxODAiIHI9IjE4MCIgZmlsbD0idXJsKCNhY2NlbnRHbG93KSIvPgoKICA8IS0tIEhpZ2gtVGVjaCBTaGllbGQgT3V0bGluZSAoUGxlZGdlICYgU2VjdXJpdHkpIC0tPgogIDxwYXRoIGQ9Ik0yNTYgOTAgTDM5MCAxNDggVjI1MCBDMzkwIDMzOCAzMzAgNDA1IDI1NiA0MzAgQzE4MiA0MDUgMTIyIDMzOCAxMjIgMjUwIFYxNDggWiIgCiAgICAgICAgZmlsbD0icmdiYSgxNSwgMjMsIDQyLCAwLjcpIiBzdHJva2U9InJnYmEoNTYsIDE4OSwgMjQ4LCAwLjQpIiBzdHJva2Utd2lkdGg9IjYiLz4KCiAgPCEtLSBRdWFudCBDYW5kbGVzdGljayAmIFRyYWplY3RvcnkgTGluZSAtLT4KICA8ZyBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPCEtLSBUZWNoIEdyaWQgTGluZXMgLS0+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMzIwIiB4Mj0iMzUyIiB5Mj0iMzIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMjQwIiB4Mj0iMzUyIiB5Mj0iMjQwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CgogICAgPCEtLSBDYW5kbGVzdGljayBiYXJzIC0tPgogICAgPGxpbmUgeDE9IjE5MCIgeTE9IjI5MCIgeDI9IjE5MCIgeTI9IjM0MCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjE4NCIgeT0iMzAwIiB3aWR0aD0iMTIiIGhlaWdodD0iMjUiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI0MCIgeTE9IjIzMCIgeDI9IjI0MCIgeTI9IjMxMCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjIzNCIgeT0iMjQ1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDAiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI5MCIgeTE9IjE4MCIgeDI9IjI5MCIgeTI9IjI3MCIgc3Ryb2tlPSIjMzhiZGY4IiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjI4NCIgeT0iMTk1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDUiIHJ4PSIzIiBmaWxsPSIjMzhiZGY4Ii8+CgogICAgPCEtLSBEeW5hbWljIE5lb24gR3Jvd3RoIEN1cnZlIC0tPgogICAgPHBhdGggZD0iTTE2NSAzMzAgUSAyMjAgMzEwLCAyNTAgMjQwIFQgMzUwIDE1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xpbmVHcmFkKSIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIAogICAgPCEtLSBSYWRpYW50IENyZXN0IFBvaW50IC0tPgogICAgPGNpcmNsZSBjeD0iMzUwIiBjeT0iMTU1IiByPSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwvZz4KPC9zdmc+">
 
-  <!-- 引入金融級 Inter 現代字體 -->
+  <!-- 現代極客金融字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(22, 30, 46, 0.7);
-      --card-inner: rgba(33, 44, 67, 0.5);
-      --border: rgba(255, 255, 255, 0.08);
+      --bg: #030712;
+      --card-bg: rgba(15, 23, 42, 0.65);
+      --card-inner: rgba(30, 41, 59, 0.45);
+      --border-glow: rgba(56, 189, 248, 0.15);
+      --border-subtle: rgba(255, 255, 255, 0.07);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-sub: #64748b;
-      --accent: #38bdf8;
-      --up-red: #f43f5e;
-      --down-green: #10b981;
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.35);
+      --up-red: #fb7185;
+      --down-green: #34d399;
       --gold: #fbbf24;
-      --nav-bg: rgba(13, 19, 33, 0.96);
+      --purple: #c084fc;
+      --nav-bg: rgba(3, 7, 18, 0.92);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(circle at 50% 0%, #172554 0%, #090d16 50%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #0c1a36 0%, #030712 55%, #01040a 100%);
       background-attachment: fixed;
       color: var(--text-main);
       margin: 0;
       padding: 0;
-      padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
-      letter-spacing: -0.01em;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom, 20px));
+      letter-spacing: -0.015em;
     }
 
     .num-font {
       font-family: 'JetBrains Mono', monospace;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+    }
+
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.35), transparent);
     }
 
     @keyframes flashUp {
-      0% { background-color: rgba(244, 63, 94, 0.45); }
+      0% { background-color: rgba(251, 113, 133, 0.35); }
       100% { background-color: transparent; }
     }
     @keyframes flashDown {
-      0% { background-color: rgba(16, 185, 129, 0.45); }
+      0% { background-color: rgba(52, 211, 153, 0.35); }
       100% { background-color: transparent; }
     }
     .flash-up { animation: flashUp 0.8s ease-out; }
@@ -68,11 +88,11 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 13, 22, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 18px;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -80,297 +100,322 @@
     .header-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.05rem;
-      font-weight: 700;
+      gap: 12px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
-    .brand-icon {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #0284c7, #38bdf8);
-      border-radius: 8px;
+    .brand-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+      background: #0f172a;
+      border: 1px solid rgba(56, 189, 248, 0.4);
     }
-    .brand-icon svg { width: 16px; height: 16px; fill: white; }
+    .brand-icon-box img { width: 28px; height: 28px; border-radius: 7px; }
+
     .header-meta {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
     }
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: #10b981;
       border-radius: 50%;
-      box-shadow: 0 0 8px #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
-    .container { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 18px; }
 
     .tab-view { display: none; }
-    .tab-view.active-view { display: block; animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(6px); }
+    .tab-view.active-view { display: block; animation: viewIn 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-    .card-title {
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hero-stat-card {
-      background: linear-gradient(145deg, rgba(30, 41, 69, 0.85), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 16px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-      position: relative;
-      overflow: hidden;
-    }
+    .hero-stat-card { padding: 26px; margin-bottom: 18px; }
     .hero-stat-card::after {
       content: "";
       position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 160px;
-      height: 160px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.18), transparent 70%);
+      top: -70px; right: -70px;
+      width: 190px; height: 190px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.2), transparent 70%);
       pointer-events: none;
     }
-    .hero-label { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .hero-val { font-size: 2.2rem; font-weight: 800; margin: 6px 0; color: #fff; }
-    .hero-sub { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .hero-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-val {
+      font-size: 2.35rem;
+      font-weight: 800;
+      margin: 8px 0;
+      background: linear-gradient(180deg, #ffffff 30%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; }
+
+    .dividend-hero-badge {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(192, 132, 252, 0.08));
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dividend-hero-badge:hover {
+      border-color: rgba(251, 191, 36, 0.5);
+      transform: translateY(-1px);
+    }
+    .dividend-tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--gold);
+      font-weight: 700;
+    }
 
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .mini-stat {
       background: var(--card-inner);
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .mini-stat-label { font-size: 0.75rem; color: var(--text-muted); }
-    .mini-stat-val { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: #fff; }
-
-    .gauge-wrapper {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
       border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 16px;
+      padding: 15px;
     }
-    .gauge-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-    .gauge-ratio { font-size: 1.8rem; font-weight: 800; }
+    .mini-stat-label { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
+    .mini-stat-val { font-size: 1.15rem; font-weight: 700; margin-top: 5px; color: #fff; }
+
+    .gauge-wrapper { padding: 20px; margin-bottom: 18px; }
+    .gauge-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+    .gauge-ratio { font-size: 1.95rem; font-weight: 800; }
     .progress-bar-bg {
       height: 8px;
-      border-radius: 4px;
-      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
       position: relative;
       overflow: hidden;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .progress-bar-fill {
       height: 100%;
-      border-radius: 4px;
-      transition: width 0.4s ease;
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .gauge-markers {
       display: flex;
       justify-content: space-between;
-      font-size: 0.72rem;
+      font-size: 0.73rem;
       color: var(--text-sub);
     }
 
     .filter-pills { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; }
     .pill-btn {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text-muted);
-      border: 1px solid transparent;
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 0.8rem;
+      border: 1px solid var(--border-subtle);
+      padding: 7px 16px;
+      border-radius: 99px;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.18s ease;
     }
     .pill-btn.active {
-      background: var(--card-inner);
-      color: var(--accent);
-      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
     }
 
     .stock-card {
-      background: var(--card-inner);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 15px 18px;
+      margin-bottom: 12px;
       cursor: pointer;
-      transition: background 0.18s ease;
+      transition: all 0.2s ease;
     }
     .stock-card:hover {
-      background: rgba(40, 53, 79, 0.65);
-      border-color: rgba(255,255,255,0.12);
+      background: rgba(30, 41, 59, 0.55);
+      border-color: rgba(255, 255, 255, 0.14);
+      transform: translateY(-1px);
     }
-    .stock-main-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .stock-main-row { display: flex; justify-content: space-between; align-items: center; }
     .stock-symbol-group { display: flex; align-items: center; gap: 8px; }
-    .symbol-text { font-size: 1.05rem; font-weight: 800; color: #fff; }
-    .stock-name-tag { font-size: 0.82rem; color: #cbd5e1; font-weight: 500; }
+    .symbol-text { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .stock-name-tag { font-size: 0.84rem; color: #cbd5e1; font-weight: 600; }
     .tag-channel {
       font-size: 0.68rem;
-      font-weight: 600;
-      padding: 2px 7px;
+      font-weight: 700;
+      padding: 3px 8px;
       border-radius: 6px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .stock-price-val { font-size: 1.05rem; font-weight: 700; text-align: right; }
+    .stock-price-val { font-size: 1.1rem; font-weight: 800; text-align: right; }
     .stock-detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      font-size: 0.82rem;
+      padding-top: 11px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.83rem;
     }
-    .detail-item-label { color: var(--text-muted); font-size: 0.74rem; }
-    .detail-item-val { font-weight: 600; margin-top: 2px; }
+    .detail-item-label { color: var(--text-muted); font-size: 0.74rem; font-weight: 500; }
+    .detail-item-val { font-weight: 700; margin-top: 2px; }
 
-    .batches-drawer {
+    .dividend-timeline-box {
+      background: rgba(10, 15, 29, 0.75);
+      border-radius: 12px;
+      padding: 12px 14px;
       margin-top: 12px;
-      padding: 10px 12px;
-      background: rgba(11, 16, 28, 0.7);
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.04);
-      display: none;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .batches-drawer.open { display: block; animation: fadeIn 0.18s; }
-    .batch-item {
+    .dividend-row-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 7px 0;
-      border-bottom: 1px dashed rgba(255,255,255,0.06);
-      font-size: 0.78rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+      font-size: 0.8rem;
+    }
+    .dividend-row-item:last-child { border-bottom: none; }
+
+    .batches-drawer {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: rgba(8, 12, 22, 0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: none;
+    }
+    .batches-drawer.open { display: block; animation: viewIn 0.18s; }
+    .batch-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+      font-size: 0.8rem;
     }
     .batch-item:last-child { border-bottom: none; }
 
     .btn {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: white;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.15s;
+      transition: all 0.18s ease;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
     }
     .btn:active { transform: scale(0.97); }
-    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--border); }
-    .btn-sm { padding: 5px 10px; font-size: 0.76rem; border-radius: 6px; }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      box-shadow: none;
+    }
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; border-radius: 8px; }
 
     .form-group { margin-bottom: 14px; position: relative; }
     .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
     .form-input, .form-select {
       width: 100%;
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: rgba(10, 15, 29, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
       padding: 12px 14px;
       color: #fff;
       font-size: 0.95rem;
       font-family: inherit;
+      transition: border 0.18s;
     }
     .form-input:focus, .form-select:focus {
       outline: none;
-      border-color: var(--accent);
-      background: rgba(15, 23, 42, 0.95);
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
     }
 
     .suggestions-menu {
       position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #172033;
-      border: 1px solid var(--accent);
-      border-radius: 10px;
+      top: 100%; left: 0; right: 0;
+      background: #0f172a;
+      border: 1px solid var(--cyan);
+      border-radius: 12px;
       max-height: 220px;
       overflow-y: auto;
       z-index: 60;
       margin-top: 4px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.7);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
       display: none;
     }
     .suggestion-row {
-      padding: 10px 14px;
+      padding: 11px 14px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       font-size: 0.88rem;
     }
     .suggestion-row:active { background: #1e293b; }
 
-    /* 📱 原生 App 底部導航欄 */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: calc(68px + env(safe-area-inset-bottom, 20px));
+      bottom: 0; left: 0; right: 0;
+      height: calc(70px + env(safe-area-inset-bottom, 20px));
       padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 4px);
       padding-top: 8px;
       background: var(--nav-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: space-around;
       align-items: flex-start;
       z-index: 50;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);
     }
     .nav-btn {
       flex: 1;
@@ -381,31 +426,80 @@
       color: var(--text-sub);
       cursor: pointer;
       font-size: 0.82rem;
-      font-weight: 600;
+      font-weight: 700;
       gap: 5px;
       height: 48px;
-      transition: all 0.15s;
+      transition: all 0.18s ease;
     }
-    .nav-btn svg { width: 26px; height: 26px; fill: currentColor; }
-    .nav-btn.active { color: var(--accent); transform: translateY(-2px); }
+    .nav-btn svg { width: 25px; height: 25px; fill: currentColor; }
+    .nav-btn.active {
+      color: var(--cyan);
+      transform: translateY(-2px);
+    }
 
     .color-up { color: var(--up-red); }
     .color-down { color: var(--down-green); }
+  
+    /* 下拉刷新 (Pull-to-Refresh) 科技感動畫 */
+    .ptr-box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: none;
+      transform: translateY(-100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+      z-index: 45;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.95) 0%, rgba(3, 7, 18, 0) 100%);
+      opacity: 0;
+    }
+    .ptr-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(56, 189, 248, 0.25);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      transition: transform 0.15s;
+    }
+    .ptr-box.refreshing .ptr-spinner {
+      animation: ptrSpin 0.75s linear infinite;
+    }}
+    @keyframes ptrSpin {
+      100% { transform: rotate(360deg); }
+    }
+    .ptr-text {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
   </style>
 </head>
 <body>
+  <!-- 下拉刷新指示器 (iOS / Android 原生手感) -->
+  <div id="ptrContainer" class="ptr-box">
+    <div id="ptrSpinner" class="ptr-spinner"></div>
+    <span id="ptrText" class="ptr-text">下拉刷新現價...</span>
+  </div>
+
 
   <header class="app-header">
     <div class="header-brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M4 19h16v2H4zm3-4h2V9H7zm4 0h2V5h-2zm4 0h2v-7h-2z"/></svg>
+      <div class="brand-icon-box">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmdHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMTcyYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzA1MDgxNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjA2MTciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Im5lb25DeWFuIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM4YmRmOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjg0YzciLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImFjY2VudEdsb3ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4IiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwZjE3MmEiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZUdyYWQiIHgxPSIwJSIgeTE9IjEwMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNjAlIiBzdG9wLWNvbG9yPSIjMzhiZGY4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzgxOGNmOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgCiAgPCEtLSBPdXRlciBSb3VuZGVkIE1ldGFsbGljIFBsYXRlIC0tPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSJ1cmwoI2JnR3JhZCkiLz4KICA8cmVjdCB4PSIxLjUiIHk9IjEuNSIgd2lkdGg9IjUwOSIgaGVpZ2h0PSI1MDkiIHJ4PSIxMTYuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTIpIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxODAiIHI9IjE4MCIgZmlsbD0idXJsKCNhY2NlbnRHbG93KSIvPgoKICA8IS0tIEhpZ2gtVGVjaCBTaGllbGQgT3V0bGluZSAoUGxlZGdlICYgU2VjdXJpdHkpIC0tPgogIDxwYXRoIGQ9Ik0yNTYgOTAgTDM5MCAxNDggVjI1MCBDMzkwIDMzOCAzMzAgNDA1IDI1NiA0MzAgQzE4MiA0MDUgMTIyIDMzOCAxMjIgMjUwIFYxNDggWiIgCiAgICAgICAgZmlsbD0icmdiYSgxNSwgMjMsIDQyLCAwLjcpIiBzdHJva2U9InJnYmEoNTYsIDE4OSwgMjQ4LCAwLjQpIiBzdHJva2Utd2lkdGg9IjYiLz4KCiAgPCEtLSBRdWFudCBDYW5kbGVzdGljayAmIFRyYWplY3RvcnkgTGluZSAtLT4KICA8ZyBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPCEtLSBUZWNoIEdyaWQgTGluZXMgLS0+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMzIwIiB4Mj0iMzUyIiB5Mj0iMzIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CiAgICA8bGluZSB4MT0iMTYwIiB5MT0iMjQwIiB4Mj0iMzUyIiB5Mj0iMjQwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wOCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+CgogICAgPCEtLSBDYW5kbGVzdGljayBiYXJzIC0tPgogICAgPGxpbmUgeDE9IjE5MCIgeTE9IjI5MCIgeDI9IjE5MCIgeTI9IjM0MCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjE4NCIgeT0iMzAwIiB3aWR0aD0iMTIiIGhlaWdodD0iMjUiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI0MCIgeTE9IjIzMCIgeDI9IjI0MCIgeTI9IjMxMCIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjIzNCIgeT0iMjQ1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDAiIHJ4PSIzIiBmaWxsPSIjMTBiOTgxIi8+CgogICAgPGxpbmUgeDE9IjI5MCIgeTE9IjE4MCIgeDI9IjI5MCIgeTI9IjI3MCIgc3Ryb2tlPSIjMzhiZGY4IiBzdHJva2Utd2lkdGg9IjMiLz4KICAgIDxyZWN0IHg9IjI4NCIgeT0iMTk1IiB3aWR0aD0iMTIiIGhlaWdodD0iNDUiIHJ4PSIzIiBmaWxsPSIjMzhiZGY4Ii8+CgogICAgPCEtLSBEeW5hbWljIE5lb24gR3Jvd3RoIEN1cnZlIC0tPgogICAgPHBhdGggZD0iTTE2NSAzMzAgUSAyMjAgMzEwLCAyNTAgMjQwIFQgMzUwIDE1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xpbmVHcmFkKSIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIAogICAgPCEtLSBSYWRpYW50IENyZXN0IFBvaW50IC0tPgogICAgPGNpcmNsZSBjeD0iMzUwIiBjeT0iMTU1IiByPSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwvZz4KPC9zdmc+" alt="Icon">
       </div>
-      <span>Portfolio & Pledge</span>
+      <span>CAPITAL PRO</span>
     </div>
     <div class="header-meta">
       <span class="pulse-dot"></span>
       <span id="rateMeta" class="num-font">USD ≈ 32.00</span>
-      <span id="syncStatus" style="font-size:0.75rem; color:var(--accent);">連線中...</span>
+      <span id="syncStatus" style="font-size:0.75rem; color:var(--cyan);">免Key自動連線</span>
     </div>
   </header>
 
@@ -413,17 +507,36 @@
 
     <!-- 1. 總覽 -->
     <div id="viewOverview" class="tab-view active-view">
-      <div class="hero-stat-card">
-        <div class="hero-label">個人淨資產 (資產 - 負債)</div>
+      <div class="glass-panel hero-stat-card">
+        <div class="hero-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+          個人真實淨資產 (扣除預估出清稅費與借貸)
+        </div>
         <div class="hero-val num-font" id="heroNetWorth">NT$ 0</div>
         <div class="hero-sub" id="heroNetProfit">
-          <span>庫存未實現損益: NT$ 0 (0.00%)</span>
+          <span>未實現淨損益: NT$ 0 (0.00%)</span>
+        </div>
+      </div>
+
+      <div class="dividend-hero-badge" onclick="switchTab('viewDividends')">
+        <div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="dividend-tag">2026 現金流</span>
+            <strong style="color:#fff; font-size:0.92rem;">當年度累計已領股息</strong>
+          </div>
+          <div class="num-font" style="font-size:1.45rem; font-weight:800; color:var(--gold); margin-top:4px;" id="heroTotalDividends">
+            NT$ 0
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.72rem; color:var(--text-muted);">查看除權息時間點 ➔</div>
+          <div class="num-font" style="font-size:0.8rem; color:var(--purple); margin-top:2px;" id="heroNextExDate">最新除息: 載入中</div>
         </div>
       </div>
 
       <div class="stats-row">
         <div class="mini-stat">
-          <div class="mini-stat-label">全資產庫存總值</div>
+          <div class="mini-stat-label">全資產券商現值 (扣稅費)</div>
           <div class="mini-stat-val num-font" id="statTotalAll">NT$ 0</div>
         </div>
         <div class="mini-stat">
@@ -431,44 +544,43 @@
           <div class="mini-stat-val num-font" style="color:var(--up-red);" id="statTotalLoan">NT$ 0</div>
         </div>
         <div class="mini-stat">
-          <div class="mini-stat-label">台股市值</div>
+          <div class="mini-stat-label">台股現值 (國泰真實算法)</div>
           <div class="mini-stat-val num-font" id="statTotalTW">NT$ 0</div>
         </div>
         <div class="mini-stat">
-          <div class="mini-stat-label">美股/複委託 (USD)</div>
+          <div class="mini-stat-label">美股現值 (USD)</div>
           <div class="mini-stat-val num-font" id="statTotalUS">$ 0.00</div>
         </div>
       </div>
 
-      <div class="card" style="border: 1px solid rgba(56, 189, 248, 0.2);">
-        <div class="card-header">
-          <div class="card-title">🏛️ 元大證金整戶維持率</div>
-          <div class="num-font" style="font-size:0.8rem; color:var(--text-muted);">含息公式</div>
-        </div>
+      <div class="glass-panel gauge-wrapper">
         <div class="gauge-header">
-          <div class="gauge-ratio num-font" id="quickRatioText">0.00%</div>
-          <div id="quickBufferText" style="font-size:0.85rem; font-weight:600;">--</div>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">🏛️ 元大證金整戶維持率 (含息公式)</div>
+            <div class="gauge-ratio num-font" id="quickRatioText">0.00%</div>
+          </div>
+          <div id="quickBufferText" style="font-size:0.88rem; font-weight:700;">--</div>
         </div>
         <div class="progress-bar-bg">
           <div id="progressBarFill" class="progress-bar-fill" style="width: 0%; background: #10b981;"></div>
         </div>
         <div class="gauge-markers num-font">
-          <span>130% 追繳防線</span>
-          <span>140% 警戒</span>
-          <span>166% 安全區</span>
+          <span style="color:var(--up-red);">130% 追繳防線</span>
+          <span>140% 警戒區</span>
+          <span style="color:var(--down-green);">166% 安全水位</span>
         </div>
       </div>
 
       <div style="display:flex; gap:10px;">
         <button class="btn" style="flex:1;" onclick="fetchAllQuotes(false)">⚡ 立即更新現價</button>
-        <button class="btn btn-secondary" style="flex:1;" onclick="uploadToCloud()">☁️ 雲端同步</button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="switchTab('viewAdd')">＋ 新增記帳</button>
       </div>
     </div>
 
     <!-- 2. 持股庫存 -->
     <div id="viewPortfolio" class="tab-view">
       <div class="card-header">
-        <div class="card-title">📈 即時持股庫存</div>
+        <div class="card-title">📈 即時持股庫存 (真實券商對帳單)</div>
         <button class="btn btn-sm" onclick="fetchAllQuotes(false)">⚡ 更新現價</button>
       </div>
 
@@ -482,9 +594,35 @@
       <div id="portfolioCardList"></div>
     </div>
 
-    <!-- 3. 證金質押 -->
+    <!-- 3. 領息專區 -->
+    <div id="viewDividends" class="tab-view">
+      <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
+        <div class="card-header" style="margin-bottom:10px;">
+          <div class="card-title">🎁 2026 除權息時間點與個股配息總覽</div>
+          <button class="btn btn-sm" onclick="autoFetchDividendSchedules(false)">⚡ 刷新時程</button>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
+          已自動將美股直投與複委託中相同的標的（如 VOO、QQQ）合併股數統計，並呈現【除息日、最後買進日、發放日】時程。
+        </div>
+
+        <div class="stats-row" style="margin-bottom:14px;">
+          <div class="mini-stat">
+            <div class="mini-stat-label">2026 當年度累計已領息收</div>
+            <div class="mini-stat-val num-font" style="color:var(--gold);" id="divCardTotalReceived">NT$ 0</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label">最新一季預計待入帳</div>
+            <div class="mini-stat-val num-font" style="color:var(--purple);" id="divCardTotalUpcoming">NT$ 0</div>
+          </div>
+        </div>
+
+        <div id="dividendCardList"></div>
+      </div>
+    </div>
+
+    <!-- 4. 證金質押 -->
     <div id="viewPledge" class="tab-view">
-      <div class="gauge-wrapper">
+      <div class="glass-panel gauge-wrapper">
         <div class="gauge-header">
           <div>
             <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">元大證金整戶維持率 (官方含息)</div>
@@ -492,7 +630,7 @@
           </div>
           <div style="text-align:right;">
             <div style="font-size:0.75rem; color:var(--text-muted);">應繳累計利息</div>
-            <div class="num-font" style="font-size:1.15rem; font-weight:700; color:var(--gold);" id="pledgeViewInterest">NT$ 0</div>
+            <div class="num-font" style="font-size:1.2rem; font-weight:800; color:var(--gold);" id="pledgeViewInterest">NT$ 0</div>
           </div>
         </div>
         <div class="progress-bar-bg">
@@ -513,15 +651,15 @@
       <div id="pledgeCardList"></div>
     </div>
 
-    <!-- 4. 記帳 -->
+    <!-- 5. 記帳與設定 -->
     <div id="viewAdd" class="tab-view">
-      <div class="card">
+      <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
         <div class="card-title">📝 新增 / 買賣持股</div>
-        <form id="tradeForm">
+        <form id="tradeForm" style="margin-top:14px;">
           <div class="form-group">
             <label class="form-label">投資管道</label>
-            <select class="form-select" id="channel" required onchange="handleChannelChange()">
-              <option value="TW">🇹🇼 台股現股 (FinMind 證交所源)</option>
+            <select class="form-select" id="channel" required>
+              <option value="TW">🇹🇼 台股現股 (國泰手續費 2.8 折真實精算)</option>
               <option value="US_DIRECT">🇺🇸 美股海外券商</option>
               <option value="US_SUB">🏛️ 美股複委託</option>
             </select>
@@ -558,9 +696,9 @@
         </form>
       </div>
 
-      <div class="card">
+      <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
         <div class="card-title">🏛️ 登記元大證金質押撥款</div>
-        <form id="pledgeForm">
+        <form id="pledgeForm" style="margin-top:14px;">
           <div class="form-group">
             <label class="form-label">擔保標的代號</label>
             <input type="text" class="form-input num-font" id="pledgeSymbol" placeholder="例如: 0050, 006208" required autocomplete="off" oninput="handlePledgeSymbolInput(this.value)">
@@ -589,40 +727,13 @@
           <button type="submit" class="btn btn-secondary" style="width:100%; margin-top:8px;">確認登記質押合約</button>
         </form>
       </div>
-    </div>
 
-    <!-- 5. 設定 -->
-    <div id="viewSettings" class="tab-view">
-      <div class="card">
-        <div class="card-title">⚡ 美股即時跳動核心 (Finnhub API Key)</div>
-        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
-          方案 A 全時段架構：盤中由 WebSocket 串流毫秒跳動；收盤與週末自動讀取盤後最後撮合價，報價與 Firstrade 完美吻合！
+      <!-- 設定與備份 -->
+      <div class="glass-panel" style="padding:20px;">
+        <div class="card-title">💾 本機專屬安全備份與匯出</div>
+        <div style="font-size:0.8rem; color:var(--text-muted); margin:10px 0 14px;">
+          全免 Key 架構：所有記帳與質押資料 100% 儲存在使用者自己的手機或電腦內，無任何隱私洩漏疑慮。
         </div>
-        <div class="form-group">
-          <label class="form-label">Finnhub API Key</label>
-          <input type="text" class="form-input num-font" id="finnhubKeyInput" placeholder="貼入你的 Finnhub Key">
-        </div>
-        <button class="btn btn-sm" type="button" onclick="saveApiKeys()">儲存並啟動連線</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">☁️ 跨裝置雲端同步 (JSONBin)</div>
-        <div class="form-group">
-          <label class="form-label">JSONBin Master Key</label>
-          <input type="text" class="form-input num-font" id="jsonbinKeyInput" placeholder="$2a$10$...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">JSONBin Bin ID</label>
-          <input type="text" class="form-input num-font" id="jsonbinBinIdInput" placeholder="66e...">
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-          <button class="btn" type="button" onclick="saveApiKeys()">儲存設定</button>
-          <button class="btn btn-secondary" type="button" onclick="fetchFromCloud()">讀取雲端資料</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">💾 本機備份與匯出</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <button class="btn btn-secondary" onclick="exportBackupJSON()">💾 下載備份檔</button>
           <button class="btn btn-secondary" onclick="triggerRestoreJSON()">📂 匯入還原檔</button>
@@ -633,6 +744,7 @@
 
   </div>
 
+  <!-- 底部 5 鍵旗艦導航 -->
   <nav class="bottom-nav">
     <div class="nav-btn active" onclick="switchTab('viewOverview', this)">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -642,6 +754,10 @@
       <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
       <span>庫存</span>
     </div>
+    <div class="nav-btn" onclick="switchTab('viewDividends', this)">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+      <span>領息</span>
+    </div>
     <div class="nav-btn" onclick="switchTab('viewPledge', this)">
       <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
       <span>質押</span>
@@ -650,35 +766,28 @@
       <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       <span>記帳</span>
     </div>
-    <div class="nav-btn" onclick="switchTab('viewSettings', this)">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      <span>設定</span>
-    </div>
   </nav>
 
 <script>
   let trades = JSON.parse(localStorage.getItem('open_portfolio_trades_v3') || '[]');
   let pledges = JSON.parse(localStorage.getItem('open_portfolio_pledges_v4') || '[]');
   let currentQuotes = JSON.parse(localStorage.getItem('open_portfolio_quotes_v3') || '{}');
+  let stockDividends = JSON.parse(localStorage.getItem('app_stock_dividends') || '{}');
+  let dividendSchedules = JSON.parse(localStorage.getItem('app_dividend_schedules_v2') || '{}');
   let currentFilter = 'ALL';
   let expandedKeys = new Set();
   let flashStates = {};
 
-  let finnhubKey = localStorage.getItem('app_finnhub_key') || '';
+  let feeDiscount = 2.8; // 國泰證券公版 2.8 折
   let usdtwdRate = parseFloat(localStorage.getItem('app_usdtwd_rate') || '32.0');
-  let jsonbinKey = localStorage.getItem('app_jsonbin_key') || '';
-  let jsonbinBinId = localStorage.getItem('app_jsonbin_bin_id') || '';
 
   document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 7);
   document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
-  document.getElementById('jsonbinKeyInput').value = jsonbinKey;
-  document.getElementById('jsonbinBinIdInput').value = jsonbinBinId;
-  document.getElementById('finnhubKeyInput').value = finnhubKey;
 
   const KNOWN_ETFS = new Set(['VOO', 'QQQ', 'SPY', 'IVV', 'VTI', 'VT', 'DIA', 'IWM', 'SOXX', 'SMH']);
+  const TW_ETFS = new Set(['0050', '006208', '00631L', '0056', '00878', '00919', '00929', '00679B', '00687B']);
 
-  // 台股與美股內建名稱字典
-  const STOCK_NAMES = {
+  const BUILTIN_STOCK_NAMES = {
     '0050': '元大台灣50',
     '006208': '富邦台50',
     '00631L': '元大台灣50正2',
@@ -687,6 +796,7 @@
     '2454': '聯發科',
     '2308': '台達電',
     '2324': '仁寶',
+    '2481': '強茂',
     '2376': '技嘉',
     '2327': '國巨',
     '2382': '廣達',
@@ -700,30 +810,75 @@
     'TSM': 'TSMC ADR'
   };
 
-  const STOCK_DATABASE = {
-    'US': [
-      { sym: 'VOO', name: 'Vanguard S&P 500 ETF' },
-      { sym: 'QQQ', name: 'Invesco QQQ Trust' },
-      { sym: 'TSLA', name: 'Tesla, Inc.' },
-      { sym: 'NVDA', name: 'NVIDIA Corporation' },
-      { sym: 'GOOGL', name: 'Alphabet Inc.' },
-      { sym: 'AAPL', name: 'Apple Inc.' },
-      { sym: 'MSFT', name: 'Microsoft Corporation' }
-    ],
-    'TW': [
-      { sym: '0050', name: '元大台灣50' },
-      { sym: '006208', name: '富邦台50' },
-      { sym: '00631L', name: '元大台灣50正2' },
-      { sym: '2330', name: '台積電' },
-      { sym: '2317', name: '鴻海' },
-      { sym: '2454', name: '聯發科' },
-      { sym: '2324', name: '仁寶' },
-      { sym: '2327', name: '國巨' }
-    ]
+  const DEFAULT_DIVIDEND_CALENDAR = {
+    '2330': { exDate: '2026-09-17', recordDate: '2026-09-23', payDate: '2026-10-15', cash: 4.50, stock: 0, freq: '季配' },
+    '0050': { exDate: '2026-07-16', recordDate: '2026-07-22', payDate: '2026-08-08', cash: 3.20, stock: 0, freq: '半年配' },
+    '006208': { exDate: '2026-07-16', recordDate: '2026-07-22', payDate: '2026-08-10', cash: 2.80, stock: 0, freq: '半年配' },
+    'VOO': { exDate: '2026-09-28', recordDate: '2026-09-29', payDate: '2026-10-02', cash: 1.85, stock: 0, freq: '季配' },
+    'QQQ': { exDate: '2026-09-21', recordDate: '2026-09-22', payDate: '2026-10-31', cash: 0.78, stock: 0, freq: '季配' },
+    'NVDA': { exDate: '2026-09-11', recordDate: '2026-09-12', payDate: '2026-10-03', cash: 0.01, stock: 0, freq: '季配' },
+    'AAPL': { exDate: '2026-08-08', recordDate: '2026-08-11', payDate: '2026-08-14', cash: 0.25, stock: 0, freq: '季配' },
+    'GOOGL': { exDate: '2026-09-08', recordDate: '2026-09-09', payDate: '2026-09-15', cash: 0.20, stock: 0, freq: '季配' },
+    'TSLA': { exDate: '--', recordDate: '--', payDate: '--', cash: 0.00, stock: 0, freq: '不配息' },
+    '2481': { exDate: '2026-07-02', recordDate: '2026-07-08', payDate: '2026-07-31', cash: 2.50, stock: 0, freq: '年配' }
   };
 
+  let dynamicStockNames = JSON.parse(localStorage.getItem('app_tw_stock_names') || '{}');
+
   function getStockDisplayName(sym) {
-    return STOCK_NAMES[sym.toUpperCase()] || '';
+    if (!sym) return '';
+    const s = sym.toUpperCase();
+    return dynamicStockNames[s] || BUILTIN_STOCK_NAMES[s] || '';
+  }
+
+  function calculateLastBuyDate(exDateStr) {
+    if (!exDateStr || exDateStr === '--') return '--';
+    try {
+      const d = new Date(exDateStr);
+      d.setDate(d.getDate() - 1);
+      if (d.getDay() === 0) d.setDate(d.getDate() - 2);
+      else if (d.getDay() === 6) d.setDate(d.getDate() - 1);
+      return d.toISOString().slice(0, 10);
+    } catch(e) { return '--'; }
+  }
+
+  function calculateCathayLiquidation(channel, symbol, shares, price) {
+    const grossVal = Math.round(shares * price);
+    if (channel !== 'TW') {
+      return { grossVal, netVal: grossVal, tax: 0, fee: 0 };
+    }
+    const sym = symbol.toUpperCase();
+    const isETF = sym.startsWith('00') || TW_ETFS.has(sym);
+    const taxRate = isETF ? 0.001 : 0.003;
+    const tax = Math.floor(grossVal * taxRate);
+    const rawFee = grossVal * 0.001425 * (feeDiscount / 10);
+    const fee = Math.max(1, Math.floor(rawFee));
+    const netVal = grossVal - tax - fee;
+    return { grossVal, netVal, tax, fee };
+  }
+
+  async function autoUpdateTWStockDatabase() {
+    try {
+      const res = await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL');
+      if (res.ok) {
+        const list = await res.json();
+        let updated = false;
+        list.forEach(item => {
+          if (item.Code && item.Name) {
+            const code = item.Code.trim().toUpperCase();
+            const name = item.Name.trim();
+            if (dynamicStockNames[code] !== name) {
+              dynamicStockNames[code] = name;
+              updated = true;
+            }
+          }
+        });
+        if (updated) {
+          localStorage.setItem('app_tw_stock_names', JSON.stringify(dynamicStockNames));
+          render();
+        }
+      }
+    } catch (e) {}
   }
 
   function switchTab(viewId, el) {
@@ -733,7 +888,7 @@
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     if (el) el.classList.add('active');
     else {
-      const map = { 'viewOverview': 0, 'viewPortfolio': 1, 'viewPledge': 2, 'viewAdd': 3, 'viewSettings': 4 };
+      const map = { 'viewOverview': 0, 'viewPortfolio': 1, 'viewDividends': 2, 'viewPledge': 3, 'viewAdd': 4 };
       if (map[viewId] !== undefined) document.querySelectorAll('.nav-btn')[map[viewId]].classList.add('active');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -745,87 +900,38 @@
     renderPortfolioList();
   }
 
-  // ===================== 取得美股最新撮合價 (含盤後/盤前，解鎖 CORS) =====================
   async function fetchUSQuoteExtended(sym) {
     let price = null;
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d&includePrePost=true`;
-    const targetUrl = encodeURIComponent(url);
-
-    // 嘗試透過 CORS 代理取得完整含盤後 (includePrePost=true) 的數據
+    const rawUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d&includePrePost=true`;
+    
     try {
-      const res = await fetch(`https://api.allorigins.win/raw?url=${targetUrl}`);
+      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`);
       const data = await res.json();
       const resObj = data?.chart?.result?.[0];
-      const meta = resObj?.meta;
-      if (meta) {
-        if (meta.postMarketPrice) {
-          price = meta.postMarketPrice;
-        } else if (resObj?.indicators?.quote?.[0]?.close) {
+      if (resObj?.meta) {
+        price = resObj.meta.postMarketPrice;
+        if (!price && resObj.indicators?.quote?.[0]?.close) {
           const closes = resObj.indicators.quote[0].close.filter(p => p !== null && p > 0);
-          if (closes.length > 0) {
-            price = closes[closes.length - 1]; // 最後一筆撮合價 (包含盤後 20:00)
-          }
+          if (closes.length > 0) price = closes[closes.length - 1];
         }
-        if (!price) price = meta.regularMarketPrice;
+        if (!price) price = resObj.meta.regularMarketPrice;
       }
-    } catch (e) {}
+    } catch(e) {}
 
-    // 第二代理備援
     if (!price) {
       try {
-        const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`);
+        const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`);
         const data = await res.json();
         const resObj = data?.chart?.result?.[0];
-        const meta = resObj?.meta;
-        if (meta) {
-          if (meta.postMarketPrice) {
-            price = meta.postMarketPrice;
-          } else if (resObj?.indicators?.quote?.[0]?.close) {
-            const closes = resObj.indicators.quote[0].close.filter(p => p !== null && p > 0);
-            if (closes.length > 0) {
-              price = closes[closes.length - 1];
-            }
-          }
-          if (!price) price = meta.regularMarketPrice;
+        if (resObj?.meta) {
+          price = resObj.meta.postMarketPrice || resObj.meta.regularMarketPrice;
         }
-      } catch (e) {}
-    }
-
-    // 若代理全失敗，回退至 Finnhub
-    if (!price && finnhubKey) {
-      try {
-        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${finnhubKey}`);
-        const d = await res.json();
-        if (d && d.c > 0) price = parseFloat(d.c);
-      } catch (e) {}
+      } catch(e) {}
     }
 
     return price ? parseFloat(price.toFixed(2)) : null;
   }
 
-  // 3 秒高速輪詢 ETF
-  async function fetchETFQuotes() {
-    const holdings = calculateHoldings();
-    const symbols = Object.values(holdings).map(h => h.symbol);
-
-    for (const sym of symbols) {
-      if (KNOWN_ETFS.has(sym)) {
-        const newPrice = await fetchUSQuoteExtended(sym);
-        if (newPrice) {
-          const oldPrice = currentQuotes[sym] || newPrice;
-          if (newPrice !== oldPrice) {
-            flashStates[sym] = newPrice > oldPrice ? 'flash-up' : 'flash-down';
-            currentQuotes[sym] = newPrice;
-            render();
-            setTimeout(() => { delete flashStates[sym]; render(); }, 800);
-          }
-        }
-      }
-    }
-    localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
-  }
-
-  // 全量報價更新
   async function fetchAllQuotes(silent = true) {
     const holdings = calculateHoldings();
     const allSymbols = new Set([...Object.values(holdings).map(h => h.symbol), ...pledges.map(p => p.symbol)]);
@@ -842,7 +948,7 @@
           const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${sym}&start_date=${startDateStr}`;
           const res = await fetch(url);
           const data = await res.json();
-          if (data && data.data && data.data.length > 0) {
+          if (data?.data?.length > 0) {
             const latest = data.data[data.data.length - 1];
             if (latest.close) currentQuotes[sym] = parseFloat(latest.close);
           }
@@ -860,119 +966,180 @@
             }
           }
         }
-      } catch (e) {}
+      } catch(e) {}
     }
 
     localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
     render();
   }
 
-  // ===================== WebSocket 個股毫秒串流 =====================
-  let socket = null;
-  function initWebSocket() {
-    if (!finnhubKey) {
-      document.getElementById('syncStatus').innerText = '未輸入 Finnhub Key';
-      document.getElementById('syncStatus').style.color = '#ef4444';
-      return;
-    }
+  async function autoFetchDividendSchedules(silent = true) {
+    const holdings = calculateHoldings();
+    const symbols = new Set(Object.values(holdings).map(h => h.symbol));
+    let updated = false;
 
-    if (socket) {
-      try { socket.close(); } catch(e){}
-    }
-
-    try {
-      socket = new WebSocket(`wss://ws.finnhub.io?token=${finnhubKey}`);
-
-      socket.addEventListener('open', () => {
-        document.getElementById('syncStatus').innerText = '● 即時連線中';
-        document.getElementById('syncStatus').style.color = '#10b981';
-
-        const holdings = calculateHoldings();
-        Object.values(holdings).forEach(h => {
-          const sym = h.symbol;
-          if (!/^\d+/.test(sym) && !KNOWN_ETFS.has(sym)) {
-            socket.send(JSON.stringify({ type: 'subscribe', symbol: sym }));
+    for (const sym of symbols) {
+      const isTW = /^\d+/.test(sym);
+      try {
+        if (isTW) {
+          const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockDividend&data_id=${sym}&start_date=2025-01-01`;
+          const res = await fetch(url);
+          const d = await res.json();
+          if (d?.data?.length > 0) {
+            const latest = d.data[d.data.length - 1];
+            dividendSchedules[sym] = {
+              exDate: latest.date || '--',
+              recordDate: latest.date ? calculateLastBuyDate(latest.date) : '--',
+              payDate: latest.date ? calculatePayoutDateApprox(latest.date) : '--',
+              cash: parseFloat(latest.CashEarningsDistribution || latest.CashStatutorySurplus || 0),
+              stock: parseFloat(latest.StockEarningsDistribution || 0),
+              freq: '季配/年配'
+            };
+            updated = true;
           }
-        });
-      });
-
-      socket.addEventListener('message', (event) => {
-        const msg = JSON.parse(event.data);
-        if (msg.type === 'trade' && msg.data && msg.data.length > 0) {
-          msg.data.forEach(trade => {
-            const sym = trade.s;
-            const newPrice = parseFloat(trade.p);
-            const oldPrice = currentQuotes[sym] || newPrice;
-
-            if (newPrice !== oldPrice) {
-              flashStates[sym] = newPrice > oldPrice ? 'flash-up' : 'flash-down';
-              currentQuotes[sym] = newPrice;
-              render();
-              setTimeout(() => { delete flashStates[sym]; render(); }, 800);
-            }
-          });
         }
-      });
+      } catch(e) {}
+    }
 
-      socket.addEventListener('error', () => {
-        document.getElementById('syncStatus').innerText = '串流受阻 (轉為輪詢)';
-        document.getElementById('syncStatus').style.color = '#f59e0b';
-      });
-
-      socket.addEventListener('close', () => {
-        setTimeout(initWebSocket, 10000);
-      });
-    } catch (err) {
-      console.error(err);
+    if (updated) {
+      localStorage.setItem('app_dividend_schedules_v2', JSON.stringify(dividendSchedules));
+      renderDividendsView();
+      if (!silent) alert('✅ 已同步最新除權息日程！');
     }
   }
 
-  // ===================== 雲端同步 =====================
-  async function uploadToCloud(silent = false) {
-    if (!jsonbinKey || !jsonbinBinId) {
-      if (!silent) { alert('請至「⚙️ 設定」輸入 JSONBin 金鑰'); switchTab('viewSettings'); }
-      return;
-    }
-    const badge = document.getElementById('syncStatus');
-    badge.innerText = '同步中...';
-
+  function calculatePayoutDateApprox(dateStr) {
+    if (!dateStr || dateStr === '--') return '--';
     try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': jsonbinKey },
-        body: JSON.stringify({ updatedAt: new Date().toISOString(), trades, pledges, quotes: currentQuotes })
-      });
-      if (res.ok) {
-        badge.innerText = '已同步';
-        if (!silent) alert('✅ 雲端同步完成！');
-      }
-    } catch (e) { badge.innerText = '同步失敗'; }
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + 28);
+      return d.toISOString().slice(0, 10);
+    } catch(e) { return '--'; }
   }
 
-  async function fetchFromCloud() {
-    if (!jsonbinKey || !jsonbinBinId) {
-      alert('請先輸入 JSONBin 金鑰！');
-      switchTab('viewSettings');
-      return;
+  function updateStockDividendDirect(sym) {
+    const cur = stockDividends[sym] || 0;
+    const name = getStockDisplayName(sym);
+    const val = prompt(`登記【${sym} ${name}】2026 當年度累計已領股息總額 (TWD)：`, cur);
+    if (val !== null && !isNaN(val)) {
+      stockDividends[sym] = Math.max(0, parseFloat(val));
+      localStorage.setItem('app_stock_dividends', JSON.stringify(stockDividends));
+      render();
     }
-    try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}/latest`, {
-        headers: { 'X-Master-Key': jsonbinKey }
-      });
-      const data = await res.json();
-      if (data.record) {
-        trades = data.record.trades || [];
-        pledges = data.record.pledges || [];
-        currentQuotes = data.record.quotes || currentQuotes;
-        localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
-        localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
-        localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
-        render();
-        fetchAllQuotes(false);
-        initWebSocket();
-        alert('✅ 已載入雲端最新資料！');
+  }
+
+  function renderDividendsView() {
+    const listEl = document.getElementById('dividendCardList');
+    listEl.innerHTML = '';
+    const holdings = calculateHoldings();
+
+    const aggregated = {};
+    for (const [key, item] of Object.entries(holdings)) {
+      if (item.shares <= 0.00001) continue;
+      const sym = item.symbol;
+      if (!aggregated[sym]) {
+        aggregated[sym] = {
+          symbol: sym,
+          channels: new Set([item.channel]),
+          shares: 0,
+          isTW: item.channel === 'TW'
+        };
+      } else {
+        aggregated[sym].channels.add(item.channel);
       }
-    } catch (e) { alert('❌ 讀取失敗'); }
+      aggregated[sym].shares += item.shares;
+    }
+
+    let totalYearlyReceived = 0;
+    let totalUpcomingExpected = 0;
+    let nearestExDateStr = '--';
+
+    for (const [sym, item] of Object.entries(aggregated)) {
+      const stockName = getStockDisplayName(sym);
+      const isTW = item.isTW;
+      const received = parseFloat(stockDividends[sym] || 0);
+      totalYearlyReceived += received;
+
+      const sched = dividendSchedules[sym] || DEFAULT_DIVIDEND_CALENDAR[sym] || {
+        exDate: '--', recordDate: '--', payDate: '--', cash: 0, stock: 0, freq: '未公告'
+      };
+
+      const lastBuyDate = calculateLastBuyDate(sched.exDate);
+      const perShare = sched.cash || 0;
+      const rateMultiplier = isTW ? 1 : usdtwdRate;
+      const expectedPayoutTWD = Math.round(item.shares * perShare * rateMultiplier);
+      const expectedPayoutUSD = (item.shares * perShare).toFixed(2);
+      totalUpcomingExpected += expectedPayoutTWD;
+
+      if (sched.exDate !== '--' && nearestExDateStr === '--') {
+        nearestExDateStr = `${sym} ${sched.exDate}`;
+      }
+
+      const channelList = Array.from(item.channels).map(c => {
+        if (c === 'US_DIRECT') return '美股直投';
+        if (c === 'US_SUB') return '複委託';
+        return '台股現股';
+      }).join(' + ');
+
+      listEl.innerHTML += `
+        <div class="stock-card" style="margin-bottom:14px;">
+          <div class="stock-main-row">
+            <div class="stock-symbol-group">
+              <span class="symbol-text">${sym}</span>
+              ${stockName ? `<span class="stock-name-tag">${stockName}</span>` : ''}
+              <span class="tag-channel" style="color:var(--cyan); font-weight:700;">${channelList}</span>
+            </div>
+            <div style="text-align:right;">
+              <div class="num-font" style="font-size:1.15rem; font-weight:800; color:var(--gold);">
+                NT$ ${received.toLocaleString()}
+              </div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">2026 累計已領總額</div>
+            </div>
+          </div>
+
+          <div class="dividend-timeline-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:0.75rem; color:var(--cyan); font-weight:700;">📅 最新除權息時程</span>
+              <span style="font-size:0.74rem; color:var(--text-sub);">合併總持股: <strong class="num-font" style="color:#fff;">${item.shares.toLocaleString()} 股</strong></span>
+            </div>
+            <div class="dividend-row-item">
+              <span style="color:var(--text-muted);">除息交易日 (Ex-Date)</span>
+              <strong style="color:var(--cyan); font-family:'JetBrains Mono'; font-size:0.85rem;">${sched.exDate}</strong>
+            </div>
+            <div class="dividend-row-item">
+              <span style="color:var(--text-muted);">最後買進日 (含息資格)</span>
+              <span class="num-font" style="color:var(--gold); font-weight:700;">${lastBuyDate}</span>
+            </div>
+            <div class="dividend-row-item">
+              <span style="color:var(--text-muted);">預計發放日 (Pay-Date)</span>
+              <span class="num-font" style="color:#fff;">${sched.payDate}</span>
+            </div>
+            <div class="dividend-row-item">
+              <span style="color:var(--text-muted);">每股配息金額</span>
+              <span class="num-font" style="color:#fff; font-weight:700;">
+                ${isTW ? `NT$ ${perShare.toFixed(2)}` : `$ ${perShare.toFixed(2)} USD`}
+                ${sched.stock > 0 ? ` + 股票股利 ${sched.stock} 股` : ''}
+              </span>
+            </div>
+            <div class="dividend-row-item" style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:4px; padding-top:6px;">
+              <span style="color:var(--text-muted);">本季預估入帳總額</span>
+              <strong class="num-font" style="color:var(--purple); font-size:0.94rem;">
+                NT$ ${expectedPayoutTWD.toLocaleString()} ${!isTW ? `($${expectedPayoutUSD})` : ''}
+              </strong>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+            <button class="btn btn-sm btn-secondary" onclick="updateStockDividendDirect('${sym}')">✏️ 登記/更新實領息收</button>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('heroTotalDividends').innerText = `NT$ ${Math.round(totalYearlyReceived).toLocaleString()}`;
+    document.getElementById('divCardTotalReceived').innerText = `NT$ ${Math.round(totalYearlyReceived).toLocaleString()}`;
+    document.getElementById('divCardTotalUpcoming').innerText = `NT$ ${Math.round(totalUpcomingExpected).toLocaleString()}`;
+    document.getElementById('heroNextExDate').innerText = `最新除息: ${nearestExDateStr}`;
   }
 
   function calculateHoldings() {
@@ -1025,10 +1192,11 @@
       const avg = item.shares > 0 ? (item.totalCost / item.shares) : 0;
       if (!currentQuotes[item.symbol]) currentQuotes[item.symbol] = avg;
       const quote = currentQuotes[item.symbol];
-      const mktVal = item.shares * quote;
-      const profit = mktVal - item.totalCost;
-      const roi = item.totalCost > 0 ? (profit / item.totalCost * 100) : 0;
-      const isUp = profit >= 0;
+
+      const { grossVal, netVal, tax, fee } = calculateCathayLiquidation(item.channel, item.symbol, item.shares, quote);
+      const capitalProfit = (netVal - item.totalCost);
+      const roi = item.totalCost > 0 ? (capitalProfit / item.totalCost * 100) : 0;
+      const isUp = capitalProfit >= 0;
       const curr = item.channel === 'TW' ? 'NT$' : '$';
       const isOpen = expandedKeys.has(key);
       const flashClass = flashStates[item.symbol] || '';
@@ -1037,10 +1205,19 @@
       let batchesHtml = '';
       if (isOpen) {
         batchesHtml = `<div class="batches-drawer open">`;
+        if (item.channel === 'TW') {
+          batchesHtml += `
+            <div style="display:flex; justify-content:space-between; font-size:0.74rem; color:var(--text-muted); margin-bottom:8px; padding-bottom:6px; border-bottom:1px dashed rgba(255,255,255,0.06);">
+              <span>預估出清成本: 證交稅 NT$${tax.toLocaleString()} + 國泰手續費 NT$${fee.toLocaleString()}</span>
+              <span>原始總市值: NT$ ${grossVal.toLocaleString()}</span>
+            </div>
+          `;
+        }
+
         item.batches.forEach((b, idx) => {
-          const bVal = b.shares * quote;
+          const bNet = calculateCathayLiquidation(item.channel, item.symbol, b.shares, quote).netVal;
           const bCost = b.shares * b.price;
-          const bProf = bVal - bCost;
+          const bProf = bNet - bCost;
           const bRoi = bCost > 0 ? (bProf / bCost * 100) : 0;
           batchesHtml += `
             <div class="batch-item">
@@ -1049,8 +1226,8 @@
                 <div style="color:var(--text-sub);">${b.shares.toLocaleString()} 股 @ ${curr} ${b.price.toFixed(3)}</div>
               </div>
               <div style="text-align:right;">
-                <div class="${bProf>=0?'color-up':'color-down'} font-weight:600;">${bProf>=0?'+':''}${curr} ${Math.round(bProf).toLocaleString()}</div>
-                <div style="font-size:0.7rem; color:var(--text-sub);">${bProf>=0?'+':''}${bRoi.toFixed(2)}%</div>
+                <div class="${bProf>=0?'color-up':'color-down'} font-weight:700;">${bProf>=0?'+':''}${curr} ${Math.round(bProf).toLocaleString()}</div>
+                <div style="font-size:0.72rem; color:var(--text-sub);">${bProf>=0?'+':''}${bRoi.toFixed(2)}%</div>
               </div>
             </div>
           `;
@@ -1068,7 +1245,7 @@
             </div>
             <div>
               <div class="stock-price-val num-font">${curr} ${quote.toFixed(3)}</div>
-              <div class="num-font" style="font-size:0.75rem; text-align:right; color:${isUp?'var(--up-red)':'var(--down-green)'};">
+              <div class="num-font" style="font-size:0.76rem; text-align:right; color:${isUp?'var(--up-red)':'var(--down-green)'};">
                 ${isUp?'+':''}${roi.toFixed(2)}%
               </div>
             </div>
@@ -1079,9 +1256,9 @@
               <div class="detail-item-val">${item.shares.toLocaleString()} 股 (${avg.toFixed(2)})</div>
             </div>
             <div style="text-align:right;">
-              <div class="detail-item-label">市值 / 未實現損益</div>
+              <div class="detail-item-label">${item.channel==='TW'?'券商現值 (扣稅費) / 淨損益':'市值 / 未實現損益'}</div>
               <div class="detail-item-val ${isUp?'color-up':'color-down'}">
-                ${curr} ${Math.round(mktVal).toLocaleString()} (${isUp?'+':''}${Math.round(profit).toLocaleString()})
+                ${curr} ${Math.round(netVal).toLocaleString()} (${isUp?'+':''}${Math.round(capitalProfit).toLocaleString()})
               </div>
             </div>
           </div>
@@ -1118,10 +1295,10 @@
               <span class="tag-channel">質押</span>
             </div>
             <div style="text-align:right;">
-              <div class="num-font" style="font-size:1.15rem; font-weight:800; color:${ratio<130?'var(--up-red)':(ratio<166?'var(--gold)':'var(--down-green)')};">
+              <div class="num-font" style="font-size:1.18rem; font-weight:800; color:${ratio<130?'var(--up-red)':(ratio<166?'var(--gold)':'var(--down-green)')};">
                 ${ratio.toFixed(2)}%
               </div>
-              <div class="num-font" style="font-size:0.75rem; color:var(--up-red); font-weight:700;">
+              <div class="num-font" style="font-size:0.76rem; color:var(--up-red); font-weight:700;">
                 借款 NT$ ${loan.toLocaleString()}
               </div>
             </div>
@@ -1178,36 +1355,43 @@
 
   function render() {
     const holdings = calculateHoldings();
-    let sumTW = 0, costTW = 0;
+    let sumTWNet = 0, costTW = 0;
     let sumUS = 0, costUS = 0;
 
     for (const [key, item] of Object.entries(holdings)) {
       if (item.shares <= 0.00001) continue;
       const quote = currentQuotes[item.symbol] || (item.shares > 0 ? item.totalCost / item.shares : 0);
-      const mktVal = item.shares * quote;
-      if (item.channel === 'TW') { sumTW += mktVal; costTW += item.totalCost; }
-      else { sumUS += mktVal; costUS += item.totalCost; }
+      const { netVal } = calculateCathayLiquidation(item.channel, item.symbol, item.shares, quote);
+
+      if (item.channel === 'TW') { 
+        sumTWNet += netVal; 
+        costTW += item.totalCost;
+      } else { 
+        sumUS += netVal; 
+        costUS += item.totalCost; 
+      }
     }
 
-    const totalAllTWD = sumTW + (sumUS * usdtwdRate);
+    const totalAllTWD = sumTWNet + (sumUS * usdtwdRate);
     const totalCostTWD = costTW + (costUS * usdtwdRate);
-    const profitTWD = totalAllTWD - totalCostTWD;
-    const roiTWD = totalCostTWD > 0 ? (profitTWD / totalCostTWD * 100) : 0;
+    const capitalProfitTWD = (totalAllTWD - totalCostTWD);
+    const roiTWD = totalCostTWD > 0 ? (capitalProfitTWD / totalCostTWD * 100) : 0;
 
     const { sumLoan, sumInterest } = renderPledges();
     const netWorth = totalAllTWD - sumLoan - sumInterest;
 
     document.getElementById('heroNetWorth').innerText = `NT$ ${Math.round(netWorth).toLocaleString()}`;
     document.getElementById('heroNetProfit').innerHTML = `
-      <span style="color:${profitTWD>=0?'var(--up-red)':'var(--down-green)'}; font-weight:700;">
-        未實現損益: ${profitTWD>=0?'+':''}NT$ ${Math.round(profitTWD).toLocaleString()} (${profitTWD>=0?'+':''}${roiTWD.toFixed(2)}%)
+      <span style="color:${capitalProfitTWD>=0?'var(--up-red)':'var(--down-green)'}; font-weight:700;">
+        未實現淨損益: ${capitalProfitTWD>=0?'+':''}NT$ ${Math.round(capitalProfitTWD).toLocaleString()} (${capitalProfitTWD>=0?'+':''}${roiTWD.toFixed(2)}%)
       </span>
     `;
     document.getElementById('statTotalAll').innerText = `NT$ ${Math.round(totalAllTWD).toLocaleString()}`;
-    document.getElementById('statTotalTW').innerText = `NT$ ${Math.round(sumTW).toLocaleString()}`;
+    document.getElementById('statTotalTW').innerText = `NT$ ${Math.round(sumTWNet).toLocaleString()}`;
     document.getElementById('statTotalUS').innerText = `$ ${sumUS.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 
     renderPortfolioList();
+    renderDividendsView();
   }
 
   async function fetchRealtimeRate() {
@@ -1220,7 +1404,7 @@
         document.getElementById('rateMeta').innerText = `USD ≈ ${usdtwdRate.toFixed(2)}`;
         render();
       }
-    } catch (e) {}
+    } catch(e) {}
   }
 
   function editPledgeRate(idx) {
@@ -1233,7 +1417,6 @@
       p.currentRate = parseFloat(val);
       localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
       render();
-      uploadToCloud(true);
     }
   }
 
@@ -1242,7 +1425,6 @@
       pledges.splice(idx, 1);
       localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
       render();
-      uploadToCloud(true);
     }
   }
 
@@ -1261,11 +1443,9 @@
     if (!currentQuotes[sym]) currentQuotes[sym] = pr;
     localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
     render();
-    uploadToCloud(true);
     alert('已成功記帳！');
     switchTab('viewPortfolio');
     fetchAllQuotes(false);
-    initWebSocket();
   });
 
   document.getElementById('pledgeForm').addEventListener('submit', (e) => {
@@ -1281,25 +1461,10 @@
     });
     localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
     render();
-    uploadToCloud(true);
     alert('質押借款登記完成！');
     switchTab('viewPledge');
     fetchAllQuotes(false);
   });
-
-  function saveApiKeys() {
-    finnhubKey = document.getElementById('finnhubKeyInput').value.trim();
-    jsonbinKey = document.getElementById('jsonbinKeyInput').value.trim();
-    jsonbinBinId = document.getElementById('jsonbinBinIdInput').value.trim();
-
-    localStorage.setItem('app_finnhub_key', finnhubKey);
-    localStorage.setItem('app_jsonbin_key', jsonbinKey);
-    localStorage.setItem('app_jsonbin_bin_id', jsonbinBinId);
-
-    alert('設定已儲存！即刻啟動即時行情');
-    fetchAllQuotes(false);
-    initWebSocket();
-  }
 
   function setFilter(filter, btn) {
     currentFilter = filter;
@@ -1307,6 +1472,24 @@
     btn.classList.add('active');
     renderPortfolioList();
   }
+
+  const STOCK_DATABASE = {
+    'US': [
+      { sym: 'VOO', name: 'Vanguard S&P 500 ETF' },
+      { sym: 'QQQ', name: 'Invesco QQQ Trust' },
+      { sym: 'TSLA', name: 'Tesla, Inc.' },
+      { sym: 'NVDA', name: 'NVIDIA Corporation' },
+      { sym: 'GOOGL', name: 'Alphabet Inc.' },
+      { sym: 'AAPL', name: 'Apple Inc.' }
+    ],
+    'TW': [
+      { sym: '0050', name: '元大台灣50' },
+      { sym: '006208', name: '富邦台50' },
+      { sym: '00631L', name: '元大台灣50正2' },
+      { sym: '2330', name: '台積電' },
+      { sym: '2317', name: '鴻海' }
+    ]
+  };
 
   function handleSymbolInput(val) {
     const box = document.getElementById('suggestionsBox');
@@ -1341,10 +1524,17 @@
   }
 
   function exportBackupJSON() {
-    const blob = new Blob([JSON.stringify({ version: '8.5', trades, pledges, quotes: currentQuotes }, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify({ 
+      version: '12.0', 
+      trades, 
+      pledges, 
+      quotes: currentQuotes,
+      dividends: stockDividends,
+      schedules: dividendSchedules
+    }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `portfolio_pro_${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `capital_pro_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
   }
   function triggerRestoreJSON() { document.getElementById('restoreFileInput').click(); }
@@ -1358,33 +1548,116 @@
         trades = d.trades || [];
         pledges = d.pledges || [];
         currentQuotes = d.quotes || {};
+        stockDividends = d.dividends || {};
+        dividendSchedules = d.schedules || {};
+
         localStorage.setItem('open_portfolio_trades_v3', JSON.stringify(trades));
         localStorage.setItem('open_portfolio_pledges_v4', JSON.stringify(pledges));
+        localStorage.setItem('app_stock_dividends', JSON.stringify(stockDividends));
+        localStorage.setItem('app_dividend_schedules_v2', JSON.stringify(dividendSchedules));
+
         render();
-        uploadToCloud(true);
         fetchAllQuotes(false);
-        initWebSocket();
         alert('還原完成！');
-      } catch (err) { alert('檔案無效'); }
+      } catch(err) { alert('檔案無效'); }
     };
     reader.readAsText(file);
   }
 
-  // 系統啟動流程
   render();
   fetchRealtimeRate();
+  autoUpdateTWStockDatabase();
+  autoFetchDividendSchedules(true);
   fetchAllQuotes(false);
-  initWebSocket();
-  if (jsonbinKey && jsonbinBinId) fetchFromCloud();
 
-  // 每 3 秒極速輪詢一次 ETF 價格 (包含盤後最後撮合價)
-  setInterval(fetchETFQuotes, 3000);
-
-  // 每 30 秒全量刷新台股與美股最新價格
-  setInterval(() => { fetchAllQuotes(true); }, 30000);
-
-  // 每 2 分鐘更新匯率
+  setInterval(() => { fetchAllQuotes(true); }, 5000);
   setInterval(fetchRealtimeRate, 120000);
+
+  // ===================== 原生 App 級下拉刷新 (Pull-To-Refresh) =====================
+  let startY = 0;
+  let currentY = 0;
+  let isPulling = false;
+  let isRefreshing = false;
+  const ptrContainer = document.getElementById('ptrContainer');
+  const ptrSpinner = document.getElementById('ptrSpinner');
+  const ptrText = document.getElementById('ptrText');
+  const PULL_THRESHOLD = 75; // 下拉觸發門檻 (px)
+
+  window.addEventListener('touchstart', (e) => {
+    // 只有在視窗位於最頂端時才能觸發下拉手勢
+    if (window.scrollY <= 2 && !isRefreshing) {
+      startY = e.touches[0].pageY;
+      isPulling = true;
+    } else {
+      isPulling = false;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isPulling || isRefreshing) return;
+    currentY = e.touches[0].pageY;
+    const diff = currentY - startY;
+
+    if (diff > 0 && window.scrollY <= 0) {
+      // 阻尼彈性公式 (拉越長阻力越大)
+      const pullDist = Math.min(diff * 0.45, 95);
+      ptrContainer.style.transform = `translateY(${pullDist - 60}px)`;
+      ptrContainer.style.opacity = Math.min(pullDist / PULL_THRESHOLD, 1);
+      
+      const rot = (pullDist / PULL_THRESHOLD) * 360;
+      ptrSpinner.style.transform = `rotate(${rot}deg)`;
+
+      if (pullDist >= PULL_THRESHOLD * 0.45) {
+        ptrText.innerText = '放開以即刻刷新...';
+        ptrText.style.color = 'var(--cyan)';
+      } else {
+        ptrText.innerText = '下拉刷新現價...';
+        ptrText.style.color = 'var(--text-muted)';
+      }
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', async () => {
+    if (!isPulling || isRefreshing) return;
+    const diff = currentY - startY;
+    const pullDist = Math.min(diff * 0.45, 95);
+    isPulling = false;
+
+    if (pullDist >= PULL_THRESHOLD * 0.45 && window.scrollY <= 0) {
+      isRefreshing = true;
+      ptrContainer.classList.add('refreshing');
+      ptrContainer.style.transform = 'translateY(14px)';
+      ptrContainer.style.opacity = '1';
+      ptrText.innerText = '正在同步最新報價...';
+
+      // 手機震動觸感回饋 (震動 15ms)
+      if (navigator.vibrate) navigator.vibrate(15);
+
+      try {
+        await Promise.all([
+          fetchAllQuotes(false),
+          autoFetchDividendSchedules(true),
+          fetchRealtimeRate()
+        ]);
+      } catch(e) {}
+
+      ptrText.innerText = '已更新至最新！';
+      setTimeout(() => {
+        ptrContainer.style.transform = 'translateY(-100%)';
+        ptrContainer.style.opacity = '0';
+        ptrContainer.classList.remove('refreshing');
+        isRefreshing = false;
+        startY = 0;
+        currentY = 0;
+      }, 500);
+    } else {
+      ptrContainer.style.transform = 'translateY(-100%)';
+      ptrContainer.style.opacity = '0';
+      startY = 0;
+      currentY = 0;
+    }
+  }, { passive: true });
+
 </script>
 </body>
 </html>
