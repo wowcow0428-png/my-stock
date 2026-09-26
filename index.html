@@ -427,7 +427,6 @@
       color: #fca5a5;
     }
 
-  
     /* 懸浮更新橫幅 (精準避開 iPhone 動態島與瀏海) */
     .update-toast {
       position: fixed;
@@ -453,14 +452,12 @@
     .update-toast.show {
       transform: translateY(0);
     }
-
   </style>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
 </head>
 <body>
   <header class="app-header">
@@ -638,7 +635,7 @@
         <div style="margin-top:12px; font-size:0.83rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
             <span style="color:var(--text-muted);">當前客戶端版本</span>
-            <span class="num-font" id="appVersionDisplay" style="color:var(--cyan); font-weight:800; font-size:0.92rem;">v2026.09.26.10</span>
+            <span class="num-font" id="appVersionDisplay" style="color:var(--cyan); font-weight:800; font-size:0.92rem;">載入中...</span>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
             <span style="color:var(--text-muted);">伺服器託管狀態</span>
@@ -669,7 +666,69 @@
   </nav>
 
   <script>
-  // 1. 資料相容性檢查與遷移
+  // ===================== 版本常數與版本更新模組 (優先定義) =====================
+  const CURRENT_APP_VERSION = '2026.09.26.15';
+
+  function initAppVersionDisplay() {
+    const el = document.getElementById('appVersionDisplay');
+    if (el) el.innerText = 'v' + CURRENT_APP_VERSION;
+  }
+
+  async function checkForAppUpdates(silent = true) {
+    try {
+      const res = await fetch(`index.html?ts=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      });
+      if (!res.ok) {
+        if (!silent) alert('無法連線至更新伺服器，請確認網路連線。');
+        return;
+      }
+      const htmlText = await res.text();
+      const match = htmlText.match(/CURRENT_APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+      if (match && match[1]) {
+        if (match[1] !== CURRENT_APP_VERSION) {
+          showUpdateToast(match[1]);
+        } else {
+          if (!silent) alert('目前已是最新版本 (v' + CURRENT_APP_VERSION + ')，無需更新！');
+        }
+      }
+    } catch(e) {
+      if (!silent) alert('檢查更新失敗，請稍後再試。');
+    }
+  }
+
+  function showUpdateToast(newVer) {
+    if (document.getElementById('appUpdateToast')) return;
+
+    const toast = document.createElement('div');
+    toast.id = 'appUpdateToast';
+    toast.className = 'update-toast';
+    toast.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.3rem;">⚡</span>
+        <div>
+          <div style="font-weight:800; color:#fff; font-size:0.88rem;">發現全新升級版本！</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">最新版本: ${newVer} (點擊更新立即套用)</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-sm" onclick="applyImmediateUpdate()" style="background:var(--cyan); color:#030712; font-weight:800; padding:6px 14px; border-radius:8px;">
+          立即更新
+        </button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+    setTimeout(() => toast.classList.add('show'), 100);
+  }
+
+  function applyImmediateUpdate() {
+    const cleanUrl = window.location.origin + window.location.pathname + '?reload=' + Date.now();
+    window.location.replace(cleanUrl);
+  }
+
+  // ===================== 1. 資料相容性檢查與遷移 =====================
   function migrateOldData() {
     const oldTradesKeys = ['open_portfolio_trades_v3', 'open_portfolio_trades_v2', 'open_portfolio_trades'];
     let existingTrades = JSON.parse(localStorage.getItem('capital_pro_trades_v5') || '[]');
@@ -709,7 +768,7 @@
   }
   migrateOldData();
 
-  // 2. 狀態定義
+  // ===================== 2. 狀態定義 =====================
   let trades = JSON.parse(localStorage.getItem('capital_pro_trades_v5') || '[]');
   let pledges = JSON.parse(localStorage.getItem('capital_pro_pledges_v5') || '[]');
   let currentQuotes = JSON.parse(localStorage.getItem('open_portfolio_quotes_v3') || '{}');
@@ -724,13 +783,14 @@
 
   function updateFeeDiscount(val) {
     feeDiscount = parseFloat(val || '2.8');
-    localStorage.setItem('app_fee_discount', feeDiscount); saveUserDataToCloud();
+    localStorage.setItem('app_fee_discount', feeDiscount);
+    saveUserDataToCloud();
     render();
   }
 
   let usdtwdRate = parseFloat(localStorage.getItem('app_usdtwd_rate') || '32.0');
 
-  // 3. 通用標的名稱
+  // ===================== 3. 通用標的名稱 =====================
   const TW_ETFS = new Set(['0050', '006208', '00631L', '0056', '00878', '00919', '00929', '00679B', '00687B']);
   const BUILTIN_STOCK_NAMES = {
     '0050': '元大台灣50', '006208': '富邦台50', '00631L': '元大台灣50正2', '2330': '台積電', '2317': '鴻海',
@@ -743,7 +803,7 @@
     return BUILTIN_STOCK_NAMES[sym.toUpperCase()] || '';
   }
 
-  // 4. 全平台拖曳支援 (2x2 半格小方塊 + 大卡片)
+  // ===================== 4. 全平台拖曳支援 =====================
   let widgetOrder = JSON.parse(localStorage.getItem('capital_pro_widget_order_v5') || '["networth", "dividend", "stat_total", "stat_loan", "stat_tw", "stat_us", "pledge"]');
 
   const widgetTemplates = {
@@ -902,7 +962,6 @@
 
   let draggedItem = null;
   function setupCardUniversalDnd(cardEl) {
-    // 電腦滑鼠拖曳
     cardEl.addEventListener('dragstart', (e) => {
       draggedItem = cardEl;
       cardEl.classList.add('is-dragging');
@@ -926,7 +985,6 @@
       container.insertBefore(draggedItem, isAfter ? cardEl.nextSibling : cardEl);
     });
 
-    // 手機觸控長按拖曳
     let pressTimer = null;
     let isDragging = false;
     let startTouchX = 0, startTouchY = 0;
@@ -998,9 +1056,10 @@
     const newOrder = [...container.querySelectorAll('.overview-widget-item')].map(item => item.getAttribute('data-id'));
     widgetOrder = newOrder;
     localStorage.setItem('capital_pro_widget_order_v5', JSON.stringify(widgetOrder));
+    saveUserDataToCloud();
   }
 
-  // 5. 領息功能完整實作
+  // ===================== 5. 領息功能完整實作 =====================
   const DEFAULT_DIVIDEND_CALENDAR = {
     '2330': { exDate: '2026-09-17', recordDate: '2026-09-23', payDate: '2026-10-15', cash: 4.50, stock: 0, freq: '季配' },
     '0050': { exDate: '2026-07-16', recordDate: '2026-07-22', payDate: '2026-08-08', cash: 3.20, stock: 0, freq: '半年配' },
@@ -1031,6 +1090,7 @@
     if (val !== null && !isNaN(val)) {
       stockDividends[sym] = Math.max(0, parseFloat(val));
       localStorage.setItem('app_stock_dividends', JSON.stringify(stockDividends));
+      saveUserDataToCloud();
       render();
     }
   }
@@ -1184,7 +1244,7 @@
     } catch(e) { return '--'; }
   }
 
-  // 6. 質押功能完整實作 (支援手動校正累積利息並自當日起接續累加)
+  // ===================== 6. 質押功能完整實作 =====================
   function calculatePledgeInterest(p) {
     const today = new Date();
     const baseDate = new Date(p.lastAdjustDate || p.date);
@@ -1283,6 +1343,7 @@
       p.baseInterest = Math.max(0, parseFloat(val));
       p.lastAdjustDate = new Date().toISOString().slice(0, 10);
       localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges));
+      saveUserDataToCloud();
       render();
       alert('累積利息已校正！系統將自今日起繼續依新金額每日加計利息。');
     }
@@ -1297,6 +1358,7 @@
       p.lastAdjustDate = new Date().toISOString().slice(0, 10);
       p.currentRate = parseFloat(val);
       localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges));
+      saveUserDataToCloud();
       render();
     }
   }
@@ -1305,11 +1367,12 @@
     if (confirm('確定結清或刪除此筆質押？')) {
       pledges.splice(idx, 1);
       localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges));
+      saveUserDataToCloud();
       render();
     }
   }
 
-  // 7. 庫存與清算淨值計算 (國泰真實扣稅費)
+  // ===================== 7. 庫存與清算淨值計算 =====================
   function calculateCathayLiquidation(channel, symbol, shares, price) {
     const grossVal = Math.round(shares * price);
     if (channel !== 'TW') return { grossVal, netVal: grossVal, tax: 0, fee: 0 };
@@ -1320,10 +1383,8 @@
     return { grossVal, netVal: grossVal - tax - fee, tax, fee };
   }
 
-// 7. 庫存與清算淨值計算 (樹狀圖批次與紀錄編修)
   function calculateHoldings() {
     const holdings = {};
-    // 記錄每一筆交易在原始 trades 陣列中的 index，以便直接編修或刪除
     trades.forEach((t, origIdx) => {
       const sym = (t.symbol || '').toUpperCase().trim();
       const ch = t.channel || 'TW';
@@ -1367,14 +1428,13 @@
       const avg = item.shares > 0 ? (item.totalCost / item.shares) : 0;
       if (!currentQuotes[item.symbol]) currentQuotes[item.symbol] = avg;
       const quote = currentQuotes[item.symbol];
-      const { netVal, tax, fee } = calculateCathayLiquidation(item.channel, item.symbol, item.shares, quote);
+      const { netVal } = calculateCathayLiquidation(item.channel, item.symbol, item.shares, quote);
       const profit = netVal - item.totalCost;
       const roi = item.totalCost > 0 ? (profit / item.totalCost * 100) : 0;
       const curr = item.channel === 'TW' ? 'NT$' : '$';
       const chName = item.channel === 'US_DIRECT' ? '美股券商' : (item.channel === 'US_SUB' ? '複委託' : '台股現股');
       const isExpanded = expandedKeys.has(key);
 
-      // 樹狀圖展開批次明細
       let batchesHtml = '';
       if (isExpanded) {
         batchesHtml = `
@@ -1388,7 +1448,7 @@
         if (item.batches.length === 0) {
           batchesHtml += `<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; padding:10px;">目前尚無歷史交易紀錄</div>`;
         } else {
-          item.batches.forEach((b, batchIdx) => {
+          item.batches.forEach((b) => {
             const isBuy = b.type === 'BUY';
             const batchCost = b.shares * b.price;
             batchesHtml += `
@@ -1469,6 +1529,7 @@
     t.shares = parseFloat(newShares);
     t.price = parseFloat(newPrice);
     localStorage.setItem('capital_pro_trades_v5', JSON.stringify(trades));
+    saveUserDataToCloud();
     render();
     alert('已成功更新此筆交易紀錄！');
   }
@@ -1479,12 +1540,13 @@
     if (confirm(`確定要刪除此筆交易紀錄嗎？\n標的: ${t.symbol} | 日期: ${t.date} | 股數: ${t.shares} 股`)) {
       trades.splice(tradeIdx, 1);
       localStorage.setItem('capital_pro_trades_v5', JSON.stringify(trades));
+      saveUserDataToCloud();
       render();
       alert('已成功刪除該筆交易紀錄！');
     }
   }
 
-  // 8. 總覽渲染與實時刷新
+  // ===================== 8. 總覽渲染與實時刷新 =====================
   function render() {
     const holdings = calculateHoldings();
     let sumTWNet = 0, sumUS = 0, costTW = 0, costUS = 0;
@@ -1518,7 +1580,7 @@
       const data = await res.json();
       if (data?.rates?.TWD) {
         usdtwdRate = parseFloat(data.rates.TWD);
-        localStorage.setItem('app_usdtwd_rate', usdtwdRate); saveUserDataToCloud();
+        localStorage.setItem('app_usdtwd_rate', usdtwdRate);
         const rateMetaEl = document.getElementById('rateMeta');
         if (rateMetaEl) rateMetaEl.innerText = `USD ≈ ${usdtwdRate.toFixed(2)}`;
         render();
@@ -1577,13 +1639,14 @@
       }
     }
     localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
+    saveUserDataToCloud();
     render();
     if (!silent) {
       alert(`已成功更新 ${updatedCount} 檔標的最新市價！`);
     }
   }
 
-  // 9. 表單監聽與分頁
+  // ===================== 9. 表單監聽與分頁 =====================
   function switchTab(viewId, el) {
     document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active-view'));
     const target = document.getElementById(viewId);
@@ -1614,6 +1677,7 @@
       });
       if (!currentQuotes[sym]) currentQuotes[sym] = pr;
       localStorage.setItem('capital_pro_trades_v5', JSON.stringify(trades));
+      saveUserDataToCloud();
       render();
       alert('買賣交易已登記！');
       switchTab('viewPortfolio');
@@ -1636,6 +1700,7 @@
         lastAdjustDate: document.getElementById('pledgeDate').value
       });
       localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges));
+      saveUserDataToCloud();
       render();
       alert('質押借款合約已登記！');
       switchTab('viewPledge');
@@ -1670,6 +1735,7 @@
         localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges));
         localStorage.setItem('app_stock_dividends', JSON.stringify(stockDividends));
         localStorage.setItem('app_dividend_schedules_v2', JSON.stringify(dividendSchedules));
+        saveUserDataToCloud();
         render(); alert('還原完成！');
       } catch(err) { alert('檔案格式錯誤'); }
     };
@@ -1693,6 +1759,13 @@
 
   let currentUser = null;
   let isSyncingFromCloud = false;
+
+  // 處理 Redirect 登入返回狀態
+  auth.getRedirectResult().catch((error) => {
+    if (error && error.code) {
+      console.error("Redirect 登入返回異常:", error);
+    }
+  });
 
   // 監聽登入狀態
   auth.onAuthStateChanged((user) => {
@@ -1728,7 +1801,12 @@
   function loginWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch((error) => {
-      alert('登入失敗: ' + error.message);
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        // 在手機 Safari 或 PWA 獨立視窗彈窗受限時，自動切換至轉址登入
+        auth.signInWithRedirect(provider);
+      } else {
+        alert('登入失敗: ' + error.message);
+      }
     });
   }
 
@@ -1750,6 +1828,9 @@
         renderOverviewWidgets();
         render();
         console.log("已成功從雲端同步最新數據！");
+      } else {
+        // 第一次登入時，自動將當前本機資料上傳建檔
+        saveUserDataToCloud();
       }
     } catch(e) {
       isSyncingFromCloud = false;
@@ -1771,88 +1852,23 @@
     }, { merge: true }).catch(e => console.error("雲端同步儲存失敗", e));
   }
 
-  // 初始化執行
+  // ===================== 初始化執行 =====================
   document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 7);
   document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
+  initAppVersionDisplay();
   renderOverviewWidgets();
   render();
-  initAppVersionDisplay();
   fetchRealtimeRate();
   fetchAllQuotes(false);
   autoFetchDividendSchedules(true);
 
-
-  // ===================== 原生 App 級版本偵測與彈跳更新按鈕 =====================
-  const CURRENT_APP_VERSION = '2026.09.26.15';
-
-  function initAppVersionDisplay() {
-    const el = document.getElementById('appVersionDisplay');
-    if (el) el.innerText = 'v' + CURRENT_APP_VERSION;
-  }
-
-  async function checkForAppUpdates(silent = true) {
-    try {
-      // 帶隨機微秒時間戳抓取遠端 index.html，徹底穿透 CDN 與快取
-      const res = await fetch(`index.html?ts=${Date.now()}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-      });
-      if (!res.ok) {
-        if (!silent) alert('無法連線至更新伺服器，請確認網路連線。');
-        return;
-      }
-      const htmlText = await res.text();
-      const match = htmlText.match(/CURRENT_APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-      if (match && match[1]) {
-        if (match[1] !== CURRENT_APP_VERSION) {
-          showUpdateToast(match[1]);
-        } else {
-          if (!silent) alert('目前已是最新版本 (v' + CURRENT_APP_VERSION + ')，無需更新！');
-        }
-      }
-    } catch(e) {
-      if (!silent) alert('檢查更新失敗，請稍後再試。');
-    }
-  }
-
-  function showUpdateToast(newVer) {
-    if (document.getElementById('appUpdateToast')) return; // 避免重複彈出
-
-    const toast = document.createElement('div');
-    toast.id = 'appUpdateToast';
-    toast.className = 'update-toast';
-    toast.innerHTML = `
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size:1.3rem;">⚡</span>
-        <div>
-          <div style="font-weight:800; color:#fff; font-size:0.88rem;">發現全新升級版本！</div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">最新版本: ${newVer} (點擊更新立即套用)</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <button class="btn btn-sm" onclick="applyImmediateUpdate()" style="background:var(--cyan); color:#030712; font-weight:800; padding:6px 14px; border-radius:8px;">
-          立即更新
-        </button>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
-    setTimeout(() => toast.classList.add('show'), 100);
-  }
-
-  function applyImmediateUpdate() {
-    // 透過 URL 帶版本時間戳強制刷新並取代當前歷史紀錄，秒速穿透手機快取
-    const cleanUrl = window.location.origin + window.location.pathname + '?reload=' + Date.now();
-    window.location.replace(cleanUrl);
-  }
-
-  // 1. 頁面開啟 2 秒後背景自動檢測
+  // 1. 頁面開啟 2 秒後背景自動檢測更新
   setTimeout(checkForAppUpdates, 2000);
-  // 2. 用戶每次把手機拿起來 / 切回 App 時自動檢測
+  // 2. 用戶每次切回 App 時自動檢測
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') checkForAppUpdates();
   });
-  // 3. 運行中每隔 60 秒定期心跳檢測一次
+  // 3. 運行中每隔 60 秒定期心跳檢測
   setInterval(checkForAppUpdates, 60000);
   </script>
 </body>
