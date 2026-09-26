@@ -487,11 +487,12 @@
     }
     .btn-mini:active { background: var(--cyan); color: #030712; }
   
-    /* iOS 原生長按拖曳排序與小工具樣式 */
+    
+    /* 全平台拖曳支援 (電腦滑鼠與手機觸控) */
     .widget-container {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       position: relative;
     }
 
@@ -500,81 +501,49 @@
       touch-action: pan-y;
       user-select: none;
       -webkit-user-select: none;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, opacity 0.2s;
+      cursor: grab;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s, opacity 0.18s;
+    }
+    .overview-widget-item:active {
+      cursor: grabbing;
     }
 
-    /* 長按進入拖曳模式 (Jiggle / Float) */
+    /* 拖曳中浮起發光樣式 */
     .overview-widget-item.is-dragging {
-      opacity: 0.92;
-      transform: scale(1.03);
+      opacity: 0.9;
+      transform: scale(1.02);
       z-index: 999;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--cyan-glow);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 16px var(--cyan-glow);
       border-radius: 20px;
     }
 
-    .overview-widget-item.drag-placeholder {
-      opacity: 0.25;
-      border: 2px dashed var(--cyan);
-      border-radius: 20px;
-      background: rgba(56, 189, 248, 0.05);
-    }
-
-    /* 頂部輕量拖曳手柄與尺寸切換列 */
     .card-ios-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 16px 4px;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       font-weight: 600;
     }
 
-    .card-ios-header .drag-handle-indicator {
+    .drag-handle-indicator {
       display: flex;
       align-items: center;
       gap: 6px;
-      cursor: grab;
-      padding: 4px 8px;
-      border-radius: 8px;
+      padding: 3px 8px;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .card-ios-header .drag-handle-indicator:active {
-      cursor: grabbing;
-      background: rgba(56, 189, 248, 0.15);
+    .overview-widget-item:hover .drag-handle-indicator {
+      border-color: rgba(56, 189, 248, 0.3);
       color: var(--cyan);
     }
 
-    .card-size-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-main);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.72rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-    }
-    .card-size-btn:active {
-      background: var(--cyan);
-      color: #030712;
-      transform: scale(0.95);
-    }
-
-    /* 迷你卡片 (Compact) 模式樣式 */
-    .overview-widget-item.compact-mode .expandable-content {
-      display: none !important;
-    }
-    .overview-widget-item.compact-mode .glass-panel {
-      padding: 16px 20px !important;
-    }
-    .overview-widget-item.compact-mode .hero-val {
-      font-size: 1.65rem !important;
-      margin: 4px 0 !important;
+    .mini-stat-card {
+      border-radius: 16px;
+      padding: 6px 4px;
     }
 
   </style>
@@ -603,7 +572,7 @@
     <!-- 1. 總覽 -->
     <div id="viewOverview" class="tab-view active-view">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">📱 戰情室版面：自由縮放與移動</span>
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">📱 電腦版直接滑鼠拖曳、手機版長按即可自由排序</span>
         <button class="btn btn-sm" onclick="switchTab('viewAdd')">＋ 新增記帳</button>
       </div>
       <div id="overviewCardsContainer"></div>
@@ -780,53 +749,36 @@
 
   let usdtwdRate = parseFloat(localStorage.getItem('app_usdtwd_rate') || '32.0');
 
-  // 3. iOS 模組長按拖曳與自由縮放
-  let widgetOrder = JSON.parse(localStorage.getItem('capital_pro_widget_order_v2') || '["networth", "dividend", "stats", "pledge"]');
-  let widgetSizes = JSON.parse(localStorage.getItem('capital_pro_widget_sizes_v2') || '{"networth":"full","dividend":"full","stats":"full","pledge":"full"}');
+  // ===================== 全平台 (電腦滑鼠拖曳 + 手機長按拖曳) 排序引擎 =====================
+    // 獨立拆分「券商現值、質押負債、台股現值、美股現值」為4個獨立可拖曳的方塊！
+    let widgetOrder = JSON.parse(localStorage.getItem('capital_pro_widget_order_v3') || '["networth", "dividend", "stat_total", "stat_loan", "stat_tw", "stat_us", "pledge"]');
 
-  function renderOverviewWidgets() {
-    const container = document.getElementById('overviewCardsContainer');
-    if (!container) return;
-    container.innerHTML = '';
-    container.className = 'widget-container';
-
-    widgetOrder.forEach(id => {
-      const isCompact = widgetSizes[id] === 'compact';
-      const el = document.createElement('div');
-      el.className = `overview-widget-item ${isCompact ? 'compact-mode' : ''}`;
-      el.setAttribute('data-id', id);
-
-      let innerContent = '';
-      if (id === 'networth') {
-        innerContent = `
+    const widgetTemplates = {
+      networth: `
+        <div class="overview-widget-item" data-id="networth" draggable="true">
           <div class="glass-panel hero-stat-card">
             <div class="card-ios-header">
               <div class="drag-handle-indicator">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-                <span>長按拖曳</span>
+                <span>按住拖曳排序</span>
               </div>
-              <button class="card-size-btn" onclick="toggleCardSize('networth')">
-                ${isCompact ? '⤢ 展開完整' : '⤡ 縮小為小卡'}
-              </button>
             </div>
-            <div style="padding: 10px 20px 18px;">
+            <div style="padding: 10px 20px 20px;">
               <div class="hero-label">個人真實淨資產 (扣除預估稅費與借貸)</div>
               <div class="hero-val num-font" id="heroNetWorth">NT$ 0</div>
-              <div class="hero-sub expandable-content" id="heroNetProfit"><span>未實現淨損益: NT$ 0 (0.00%)</span></div>
+              <div class="hero-sub" id="heroNetProfit"><span>未實現淨損益: NT$ 0 (0.00%)</span></div>
             </div>
           </div>
-        `;
-      } else if (id === 'dividend') {
-        innerContent = `
+        </div>
+      `,
+      dividend: `
+        <div class="overview-widget-item" data-id="dividend" draggable="true">
           <div class="glass-panel" style="border-radius: 20px;">
             <div class="card-ios-header">
               <div class="drag-handle-indicator">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-                <span>長按拖曳</span>
+                <span>按住拖曳排序</span>
               </div>
-              <button class="card-size-btn" onclick="toggleCardSize('dividend')">
-                ${isCompact ? '⤢ 展開完整' : '⤡ 縮小為小卡'}
-              </button>
             </div>
             <div style="padding: 6px 18px 18px;">
               <div class="dividend-hero-badge" onclick="switchTab('viewDividends')" style="margin-bottom:0;">
@@ -837,135 +789,218 @@
                   </div>
                   <div class="num-font" style="font-size:1.45rem; font-weight:800; color:var(--gold); margin-top:4px;" id="heroTotalDividends">NT$ 0</div>
                 </div>
-                <div class="expandable-content" style="text-align:right;">
+                <div style="text-align:right;">
                   <div style="font-size:0.72rem; color:var(--text-muted);">查看除權息時間點 ➔</div>
                   <div class="num-font" style="font-size:0.8rem; color:var(--purple); margin-top:2px;" id="heroNextExDate">最新除息: 載入中</div>
                 </div>
               </div>
             </div>
           </div>
-        `;
-      } else if (id === 'stats') {
-        innerContent = `
-          <div class="glass-panel" style="border-radius: 20px;">
+        </div>
+      `,
+      stat_total: `
+        <div class="overview-widget-item" data-id="stat_total" draggable="true">
+          <div class="glass-panel mini-stat-card">
             <div class="card-ios-header">
               <div class="drag-handle-indicator">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-                <span>長按拖曳</span>
+                <span>全資產券商現值</span>
               </div>
-              <button class="card-size-btn" onclick="toggleCardSize('stats')">
-                ${isCompact ? '⤢ 展開完整' : '⤡ 縮小為小卡'}
-              </button>
             </div>
-            <div style="padding: 10px 18px 18px;">
-              <div class="stats-row">
-                <div class="mini-stat"><div class="mini-stat-label">券商現值 (扣稅費)</div><div class="mini-stat-val num-font" id="statTotalAll">NT$ 0</div></div>
-                <div class="mini-stat"><div class="mini-stat-label">質押總負債</div><div class="mini-stat-val num-font" style="color:var(--up-red);" id="statTotalLoan">NT$ 0</div></div>
-                <div class="mini-stat expandable-content"><div class="mini-stat-label">台股現值 (國泰精算)</div><div class="mini-stat-val num-font" id="statTotalTW">NT$ 0</div></div>
-                <div class="mini-stat expandable-content"><div class="mini-stat-label">美股現值 (USD)</div><div class="mini-stat-val num-font" id="statTotalUS">$ 0.00</div></div>
-              </div>
+            <div style="padding: 4px 18px 18px;">
+              <div class="mini-stat-label">扣除預估出清手續費與證交稅</div>
+              <div class="num-font" style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-top: 4px;" id="statTotalAll">NT$ 0</div>
             </div>
           </div>
-        `;
-      } else if (id === 'pledge') {
-        innerContent = `
+        </div>
+      `,
+      stat_loan: `
+        <div class="overview-widget-item" data-id="stat_loan" draggable="true">
+          <div class="glass-panel mini-stat-card">
+            <div class="card-ios-header">
+              <div class="drag-handle-indicator">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+                <span>質押總負債</span>
+              </div>
+            </div>
+            <div style="padding: 4px 18px 18px;">
+              <div class="mini-stat-label">元大證金借款本金總額</div>
+              <div class="num-font" style="font-size: 1.5rem; font-weight: 800; color: var(--up-red); margin-top: 4px;" id="statTotalLoan">NT$ 0</div>
+            </div>
+          </div>
+        </div>
+      `,
+      stat_tw: `
+        <div class="overview-widget-item" data-id="stat_tw" draggable="true">
+          <div class="glass-panel mini-stat-card">
+            <div class="card-ios-header">
+              <div class="drag-handle-indicator">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+                <span>台股現值</span>
+              </div>
+            </div>
+            <div style="padding: 4px 18px 18px;">
+              <div class="mini-stat-label">國泰證券 2.8 折真實扣費</div>
+              <div class="num-font" style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-top: 4px;" id="statTotalTW">NT$ 0</div>
+            </div>
+          </div>
+        </div>
+      `,
+      stat_us: `
+        <div class="overview-widget-item" data-id="stat_us" draggable="true">
+          <div class="glass-panel mini-stat-card">
+            <div class="card-ios-header">
+              <div class="drag-handle-indicator">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+                <span>美股現值</span>
+              </div>
+            </div>
+            <div style="padding: 4px 18px 18px;">
+              <div class="mini-stat-label">美股券商 + 複委託 (美元原幣)</div>
+              <div class="num-font" style="font-size: 1.5rem; font-weight: 800; color: var(--cyan); margin-top: 4px;" id="statTotalUS">$ 0.00</div>
+            </div>
+          </div>
+        </div>
+      `,
+      pledge: `
+        <div class="overview-widget-item" data-id="pledge" draggable="true">
           <div class="glass-panel gauge-wrapper" style="border-radius: 20px;">
             <div class="card-ios-header" style="padding: 0 0 8px;">
               <div class="drag-handle-indicator">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-                <span>長按拖曳</span>
+                <span>元大證金整戶維持率</span>
               </div>
-              <button class="card-size-btn" onclick="toggleCardSize('pledge')">
-                ${isCompact ? '⤢ 展開完整' : '⤡ 縮小為小卡'}
-              </button>
             </div>
             <div class="gauge-header">
               <div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">🏛️ 元大證金整戶維持率</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">官方含息維持率</div>
                 <div class="gauge-ratio num-font" id="quickRatioText">0.00%</div>
               </div>
               <div id="quickBufferText" style="font-size:0.88rem; font-weight:700;">--</div>
             </div>
             <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill" style="width: 0%; background: #10b981;"></div></div>
-            <div class="gauge-markers num-font expandable-content">
+            <div class="gauge-markers num-font">
               <span style="color:var(--up-red);">130% 追繳防線</span><span>140% 警戒區</span><span style="color:var(--down-green);">166% 安全水位</span>
             </div>
           </div>
-        `;
+        </div>
+      `
+    };
+
+    function renderOverviewWidgets() {
+      const container = document.getElementById('overviewCardsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      container.className = 'widget-container';
+
+      // 遷移舊的 widgetOrder (如果包含舊的 'stats')
+      if (widgetOrder.includes('stats')) {
+        widgetOrder = ["networth", "dividend", "stat_total", "stat_loan", "stat_tw", "stat_us", "pledge"];
+        localStorage.setItem('capital_pro_widget_order_v3', JSON.stringify(widgetOrder));
       }
 
-      el.innerHTML = innerContent;
-      container.appendChild(el);
-      setupCardTouchDnd(el);
-    });
-  }
+      widgetOrder.forEach(id => {
+        if (!widgetTemplates[id]) return;
+        const tempWrapper = document.createElement('div');
+        tempWrapper.innerHTML = widgetTemplates[id].trim();
+        const el = tempWrapper.firstChild;
+        container.appendChild(el);
+        setupCardUniversalDnd(el);
+      });
+    }
 
-  function toggleCardSize(id) {
-    widgetSizes[id] = widgetSizes[id] === 'compact' ? 'full' : 'compact';
-    localStorage.setItem('capital_pro_widget_sizes_v2', JSON.stringify(widgetSizes));
-    renderOverviewWidgets();
-    render();
-  }
+    // ===================== 全平台拖曳支援 (電腦滑鼠 Drag & Drop + 手機 Touch) =====================
+    let draggedItem = null;
 
-  function setupCardTouchDnd(cardEl) {
-    let pressTimer = null;
-    let isDragging = false;
-    let startTouchY = 0;
-
-    const handleTouchStart = (e) => {
-      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-      const touch = e.touches[0];
-      startTouchY = touch.clientY;
-      pressTimer = setTimeout(() => {
-        isDragging = true;
-        if (navigator.vibrate) navigator.vibrate(30);
+    function setupCardUniversalDnd(cardEl) {
+      // 1. 電腦版原生滑鼠拖曳 (HTML5 Drag and Drop API)
+      cardEl.addEventListener('dragstart', (e) => {
+        draggedItem = cardEl;
         cardEl.classList.add('is-dragging');
-      }, 350);
-    };
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', cardEl.getAttribute('data-id'));
+      });
 
-    const handleTouchMove = (e) => {
-      const touch = e.touches[0];
-      const diffY = touch.clientY - startTouchY;
-      if (!isDragging && Math.abs(diffY) > 10) {
-        clearTimeout(pressTimer);
-        return;
-      }
-      if (isDragging) {
-        e.preventDefault();
-        cardEl.style.transform = `translateY(${diffY}px) scale(1.03)`;
-        const currentCenterY = touch.clientY;
-        const container = document.getElementById('overviewCardsContainer');
-        const siblings = [...container.querySelectorAll('.overview-widget-item:not(.is-dragging)')];
-        const targetSibling = siblings.find(sib => {
-          const rect = sib.getBoundingClientRect();
-          return currentCenterY >= rect.top && currentCenterY <= rect.bottom;
-        });
-        if (targetSibling) {
-          const rect = targetSibling.getBoundingClientRect();
-          const next = (currentCenterY - rect.top) / (rect.bottom - rect.top) > 0.5;
-          container.insertBefore(cardEl, next ? targetSibling.nextSibling : targetSibling);
-        }
-      }
-    };
-
-    const handleTouchEnd = () => {
-      clearTimeout(pressTimer);
-      if (isDragging) {
-        isDragging = false;
+      cardEl.addEventListener('dragend', () => {
+        draggedItem = null;
         cardEl.classList.remove('is-dragging');
-        cardEl.style.transform = '';
-        const container = document.getElementById('overviewCardsContainer');
-        widgetOrder = [...container.querySelectorAll('.overview-widget-item')].map(item => item.getAttribute('data-id'));
-        localStorage.setItem('capital_pro_widget_order_v2', JSON.stringify(widgetOrder));
-        if (navigator.vibrate) navigator.vibrate(15);
-      }
-    };
+        saveAndPersistOrder();
+      });
 
-    cardEl.addEventListener('touchstart', handleTouchStart, { passive: false });
-    cardEl.addEventListener('touchmove', handleTouchMove, { passive: false });
-    cardEl.addEventListener('touchend', handleTouchEnd);
-    cardEl.addEventListener('touchcancel', handleTouchEnd);
-  }
+      cardEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (!draggedItem || draggedItem === cardEl) return;
+        const container = document.getElementById('overviewCardsContainer');
+        const rect = cardEl.getBoundingClientRect();
+        const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+        container.insertBefore(draggedItem, next ? cardEl.nextSibling : cardEl);
+      });
+
+      // 2. 手機版原生觸控長按拖曳 (Touch Events)
+      let pressTimer = null;
+      let isDragging = false;
+      let startTouchY = 0;
+
+      const handleTouchStart = (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+        const touch = e.touches[0];
+        startTouchY = touch.clientY;
+        pressTimer = setTimeout(() => {
+          isDragging = true;
+          if (navigator.vibrate) navigator.vibrate(30);
+          cardEl.classList.add('is-dragging');
+        }, 300);
+      };
+
+      const handleTouchMove = (e) => {
+        const touch = e.touches[0];
+        const diffY = touch.clientY - startTouchY;
+        if (!isDragging && Math.abs(diffY) > 8) {
+          clearTimeout(pressTimer);
+          return;
+        }
+        if (isDragging) {
+          e.preventDefault();
+          cardEl.style.transform = `translateY(${diffY}px) scale(1.02)`;
+          const currentCenterY = touch.clientY;
+          const container = document.getElementById('overviewCardsContainer');
+          const siblings = [...container.querySelectorAll('.overview-widget-item:not(.is-dragging)')];
+          const targetSibling = siblings.find(sib => {
+            const rect = sib.getBoundingClientRect();
+            return currentCenterY >= rect.top && currentCenterY <= rect.bottom;
+          });
+          if (targetSibling) {
+            const rect = targetSibling.getBoundingClientRect();
+            const next = (currentCenterY - rect.top) / (rect.bottom - rect.top) > 0.5;
+            container.insertBefore(cardEl, next ? targetSibling.nextSibling : targetSibling);
+          }
+        }
+      };
+
+      const handleTouchEnd = () => {
+        clearTimeout(pressTimer);
+        if (isDragging) {
+          isDragging = false;
+          cardEl.classList.remove('is-dragging');
+          cardEl.style.transform = '';
+          saveAndPersistOrder();
+          if (navigator.vibrate) navigator.vibrate(15);
+        }
+      };
+
+      cardEl.addEventListener('touchstart', handleTouchStart, { passive: false });
+      cardEl.addEventListener('touchmove', handleTouchMove, { passive: false });
+      cardEl.addEventListener('touchend', handleTouchEnd);
+      cardEl.addEventListener('touchcancel', handleTouchEnd);
+    }
+
+    function saveAndPersistOrder() {
+      const container = document.getElementById('overviewCardsContainer');
+      const newOrder = [...container.querySelectorAll('.overview-widget-item')].map(item => item.getAttribute('data-id'));
+      widgetOrder = newOrder;
+      localStorage.setItem('capital_pro_widget_order_v3', JSON.stringify(widgetOrder));
+    }
 
   // 4. 通用字典與計算
   const TW_ETFS = new Set(['0050', '006208', '00631L', '0056', '00878', '00919', '00929', '00679B', '00687B']);
