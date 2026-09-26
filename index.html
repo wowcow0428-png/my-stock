@@ -667,7 +667,7 @@
 
   <script>
   // ===================== 版本常數與版本更新模組 (優先定義) =====================
-  const CURRENT_APP_VERSION = '2026.09.26.15';
+  const CURRENT_APP_VERSION = '2026.09.26.20';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
@@ -676,25 +676,35 @@
 
   async function checkForAppUpdates(silent = true) {
     try {
-      const res = await fetch(`index.html?ts=${Date.now()}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      // 1. 動態取得目前頁面真實完整 URL，避免相對路徑 404
+      const url = new URL(window.location.href);
+      url.searchParams.set('check_ver_ts', Date.now()); // 穿透快取
+
+      const res = await fetch(url.toString(), {
+        cache: 'no-store'
       });
+
       if (!res.ok) {
-        if (!silent) alert('無法連線至更新伺服器，請確認網路連線。');
+        if (!silent) alert('無法連線至更新伺服器 (HTTP ' + res.status + ')');
         return;
       }
+
       const htmlText = await res.text();
+      // 2. 比對遠端 HTML 內的版本號
       const match = htmlText.match(/CURRENT_APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
       if (match && match[1]) {
-        if (match[1] !== CURRENT_APP_VERSION) {
-          showUpdateToast(match[1]);
+        const remoteVersion = match[1].trim();
+        if (remoteVersion !== CURRENT_APP_VERSION) {
+          showUpdateToast(remoteVersion);
         } else {
           if (!silent) alert('目前已是最新版本 (v' + CURRENT_APP_VERSION + ')，無需更新！');
         }
+      } else {
+        if (!silent) alert('無法解析最新版本號，請確認檔案格式。');
       }
     } catch(e) {
-      if (!silent) alert('檢查更新失敗，請稍後再試。');
+      console.error('檢查更新錯誤:', e);
+      if (!silent) alert('檢查更新失敗：' + (e.message || '請確認網路連線'));
     }
   }
 
@@ -1802,7 +1812,6 @@
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch((error) => {
       if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
-        // 在手機 Safari 或 PWA 獨立視窗彈窗受限時，自動切換至轉址登入
         auth.signInWithRedirect(provider);
       } else {
         alert('登入失敗: ' + error.message);
@@ -1829,7 +1838,6 @@
         render();
         console.log("已成功從雲端同步最新數據！");
       } else {
-        // 第一次登入時，自動將當前本機資料上傳建檔
         saveUserDataToCloud();
       }
     } catch(e) {
