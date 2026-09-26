@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <!-- 防止手機瀏覽器死記舊版本快取 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Capital & Pledge Terminal</title>
@@ -477,6 +481,59 @@
       font-weight: 600;
       color: var(--text-muted);
       letter-spacing: 0.02em;
+    }
+
+  
+    /* 自動更新 Toast 提示 */
+    .update-toast {
+      position: fixed;
+      top: 16px;
+      left: 18px;
+      right: 18px;
+      max-width: 480px;
+      margin: 0 auto;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.35);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      transform: translateY(-120%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(16px);
+    }
+    .update-toast.show { transform: translateY(0); }
+
+    /* iPhone 安裝引導氣泡 */
+    .ios-install-banner {
+      position: fixed;
+      bottom: calc(84px + env(safe-area-inset-bottom, 20px));
+      left: 16px;
+      right: 16px;
+      max-width: 420px;
+      margin: 0 auto;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 16px;
+      padding: 14px 16px;
+      z-index: 99;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      animation: viewIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .banner-pointer {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid rgba(15, 23, 42, 0.96);
     }
 
   </style>
@@ -1657,6 +1714,74 @@
       currentY = 0;
     }
   }, { passive: true });
+
+
+  // ===================== 自動熱更新機制 (你一推程式碼，所有人自動更新) =====================
+  const CURRENT_APP_VERSION = '2026.09.26.1';
+
+  async function checkForAppUpdates() {
+    try {
+      // 帶隨機時間戳抓取遠端最新 HTML，避開 CDN 和瀏覽器快取
+      const res = await fetch(`index.html?t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const htmlText = await res.text();
+      const match = htmlText.match(/CURRENT_APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+      if (match && match[1] && match[1] !== CURRENT_APP_VERSION) {
+        // 發現你發布了新版本！自動為使用者重新整理載入最新版本
+        console.log(`發現新版本: ${match[1]} (目前: ${CURRENT_APP_VERSION})`);
+        showUpdateToast();
+      }
+    } catch(e) {}
+  }
+
+  function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.className = 'update-toast';
+    toast.innerHTML = `
+      <div>
+        <div style="font-weight:700; color:#fff;">⚡ 系統有全新升級！</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">已為你準備好最新功能與介面</div>
+      </div>
+      <button class="btn btn-sm" onclick="location.reload(true)" style="background:var(--cyan); color:#030712; font-weight:800;">立即更新</button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+  }
+
+  // 每次打開 App 或切回畫面時自動檢測是否有新版本
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') checkForAppUpdates();
+  });
+  setTimeout(checkForAppUpdates, 2000);
+
+  // ===================== iPhone 首次打開引導安裝浮動氣泡 =====================
+  function checkIosInstallGuide() {
+    const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+    const dismissed = localStorage.getItem('hide_ios_install_bubble');
+
+    if (isIos && !isStandalone && !dismissed) {
+      const banner = document.createElement('div');
+      banner.className = 'ios-install-banner';
+      banner.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div class="brand-icon-box" style="width:28px; height:28px;"><img src="${icon_base64}" style="width:24px; height:24px;"></div>
+            <div>
+              <strong style="color:#fff; font-size:0.86rem;">將 CAPITAL PRO 安裝至手機</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                點擊下方 <svg style="display:inline; vertical-align:middle; width:15px; height:15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.1.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .9 2 2z"/></svg> ➔ 選擇「加入主畫面」
+              </div>
+            </div>
+          </div>
+          <button style="background:none; border:none; color:var(--text-sub); font-size:1.1rem; cursor:pointer;" onclick="this.parentElement.parentElement.remove(); localStorage.setItem('hide_ios_install_bubble', '1');">✕</button>
+        </div>
+        <div class="banner-pointer"></div>
+      `;
+      document.body.appendChild(banner);
+    }
+  }
+  setTimeout(checkIosInstallGuide, 1500);
 
 </script>
 </body>
