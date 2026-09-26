@@ -1769,6 +1769,7 @@
 
   let currentUser = null;
   let isSyncingFromCloud = false;
+  let unsubscribeSnapshot = null;
 
   // 處理 Redirect 登入返回狀態
   auth.getRedirectResult().catch((error) => {
@@ -1788,14 +1789,24 @@
       if (authStatusEl) authStatusEl.innerText = `已登入: ${user.email}`;
       if (authBtnEl) {
         authBtnEl.innerText = '登出帳號';
-        authBtnEl.onclick = () => auth.signOut();
+        authBtnEl.onclick = () => {
+          if (unsubscribeSnapshot) {
+            unsubscribeSnapshot();
+            unsubscribeSnapshot = null;
+          }
+          auth.signOut();
+        };
       }
       if (cloudBadgeEl) {
         cloudBadgeEl.innerText = '雲端自動同步中 (已連線)';
         cloudBadgeEl.style.color = 'var(--down-green)';
       }
-      loadUserDataFromCloud();
+      initRealtimeCloudSync(user.uid);
     } else {
+      if (unsubscribeSnapshot) {
+        unsubscribeSnapshot();
+        unsubscribeSnapshot = null;
+      }
       if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)';
       if (authBtnEl) {
         authBtnEl.innerText = 'Google 帳號一鍵登入';
@@ -1819,14 +1830,23 @@
     });
   }
 
-  // 雲端資料同步至本機
-  async function loadUserDataFromCloud() {
-    if (!currentUser) return;
-    try {
-      const docRef = db.collection('users').doc(currentUser.uid);
-      const doc = await docRef.get();
+  // 即時雙向同步與載入
+  function initRealtimeCloudSync(uid) {
+    if (unsubscribeSnapshot) unsubscribeSnapshot();
+    const docRef = db.collection('users').doc(uid);
+
+    unsubscribeSnapshot = docRef.onSnapshot((doc) => {
       if (doc.exists) {
         const d = doc.data();
+        const cloudTradesCount = Array.isArray(d.trades) ? d.trades.length : 0;
+        const cloudPledgesCount = Array.isArray(d.pledges) ? d.pledges.length : 0;
+
+        // 若雲端為空但本機已有資料，自動將本機資料初始化至雲端
+        if (cloudTradesCount === 0 && cloudPledgesCount === 0 && (trades.length > 0 || pledges.length > 0)) {
+          saveUserDataToCloud();
+          return;
+        }
+
         isSyncingFromCloud = true;
         if (d.trades) { trades = d.trades; localStorage.setItem('capital_pro_trades_v5', JSON.stringify(trades)); }
         if (d.pledges) { pledges = d.pledges; localStorage.setItem('capital_pro_pledges_v5', JSON.stringify(pledges)); }
@@ -1834,16 +1854,18 @@
         if (d.dividends) { stockDividends = d.dividends; localStorage.setItem('app_stock_dividends', JSON.stringify(stockDividends)); }
         if (d.widgetOrder) { widgetOrder = d.widgetOrder; localStorage.setItem('capital_pro_widget_order_v5', JSON.stringify(widgetOrder)); }
         isSyncingFromCloud = false;
+
         renderOverviewWidgets();
         render();
-        console.log("已成功從雲端同步最新數據！");
+        console.log("已即時同步雲端最新數據！");
       } else {
-        saveUserDataToCloud();
+        if (trades.length > 0 || pledges.length > 0) {
+          saveUserDataToCloud();
+        }
       }
-    } catch(e) {
-      isSyncingFromCloud = false;
-      console.error("載入雲端資料失敗", e);
-    }
+    }, (error) => {
+      console.error("即時監聽異常:", error);
+    });
   }
 
   // 本機資料自動上傳雲端
