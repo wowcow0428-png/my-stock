@@ -600,6 +600,7 @@
           <input type="number" class="form-input num-font" id="feeDiscountInput" value="2.8" step="0.1" min="1" max="10" onchange="updateFeeDiscount(this.value)">
         </div>
       </div>
+
       <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
         <div class="card-title" style="font-size:1.05rem; font-weight:800;">💾 本機資料安全備份</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
@@ -607,6 +608,31 @@
           <button class="btn btn-secondary" onclick="triggerRestoreJSON()">📂 匯入還原</button>
           <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(this)">
         </div>
+      </div>
+
+      <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
+        <div class="card-title" style="font-size:1.05rem; font-weight:800;">ℹ️ 系統版本與更新狀態</div>
+        <div style="margin-top:12px; font-size:0.83rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+            <span style="color:var(--text-muted);">當前客戶端版本</span>
+            <span class="num-font" id="appVersionDisplay" style="color:var(--cyan); font-weight:800; font-size:0.92rem;">v2026.09.26.10</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+            <span style="color:var(--text-muted);">伺服器託管狀態</span>
+            <span style="color:#fff; font-weight:600;">GitHub Pages (已連線)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.08);">
+            <span style="color:var(--text-muted);">版本心跳檢測</span>
+            <span style="color:var(--down-green); font-weight:600;">自動偵測中 (心跳 60s)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0;">
+            <span style="color:var(--text-muted);">架構模式</span>
+            <span style="color:var(--text-sub);">零伺服器 PWA 本地加密沙盒</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="checkForAppUpdates(false)" style="width:100%; margin-top:14px; font-size:0.84rem;">
+          🔍 手動檢查最新版本
+        </button>
       </div>
     </div>
   </div>
@@ -1605,6 +1631,7 @@
   document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
   renderOverviewWidgets();
   render();
+  initAppVersionDisplay();
   fetchRealtimeRate();
   fetchAllQuotes(false);
   autoFetchDividendSchedules(true);
@@ -1613,20 +1640,34 @@
   // ===================== 原生 App 級版本偵測與彈跳更新按鈕 =====================
   const CURRENT_APP_VERSION = '2026.09.26.10';
 
-  async function checkForAppUpdates() {
+  function initAppVersionDisplay() {
+    const el = document.getElementById('appVersionDisplay');
+    if (el) el.innerText = 'v' + CURRENT_APP_VERSION;
+  }
+
+  async function checkForAppUpdates(silent = true) {
     try {
       // 帶隨機微秒時間戳抓取遠端 index.html，徹底穿透 CDN 與快取
       const res = await fetch(`index.html?ts=${Date.now()}`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (!silent) alert('無法連線至更新伺服器，請確認網路連線。');
+        return;
+      }
       const htmlText = await res.text();
       const match = htmlText.match(/CURRENT_APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-      if (match && match[1] && match[1] !== CURRENT_APP_VERSION) {
-        showUpdateToast(match[1]);
+      if (match && match[1]) {
+        if (match[1] !== CURRENT_APP_VERSION) {
+          showUpdateToast(match[1]);
+        } else {
+          if (!silent) alert('目前已是最新版本 (v' + CURRENT_APP_VERSION + ')，無需更新！');
+        }
       }
-    } catch(e) {}
+    } catch(e) {
+      if (!silent) alert('檢查更新失敗，請稍後再試。');
+    }
   }
 
   function showUpdateToast(newVer) {
