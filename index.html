@@ -1528,32 +1528,59 @@
 
   async function fetchUSQuoteExtended(sym) {
     let price = null;
-    try {
-      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d`)}`);
-      const data = await res.json();
-      price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    } catch(e) {}
-    return price ? parseFloat(price.toFixed(2)) : null;
+    const cleanSym = sym.toUpperCase().trim();
+    const urls = [
+      `https://corsproxy.io/?${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${cleanSym}?interval=5m&range=1d`)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${cleanSym}?interval=5m&range=1d`)}`
+    ];
+
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) continue;
+        const data = await res.json();
+        const meta = data?.chart?.result?.[0]?.meta;
+        price = meta?.regularMarketPrice || meta?.chartPreviousClose;
+        if (price) break;
+      } catch(e) {}
+    }
+    return price ? parseFloat(Number(price).toFixed(2)) : null;
   }
 
   async function fetchAllQuotes(silent = true) {
     const holdings = calculateHoldings();
     const allSymbols = new Set([...Object.values(holdings).map(h => h.symbol), ...pledges.map(p => p.symbol)]);
     if (allSymbols.size === 0) return;
+
+    let updatedCount = 0;
     for (const sym of allSymbols) {
       try {
         if (/^\d+/.test(sym)) {
           const res = await fetch(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${sym}&start_date=2026-01-01`);
           const data = await res.json();
-          if (data?.data?.length > 0) currentQuotes[sym] = parseFloat(data.data[data.data.length - 1].close);
+          if (data?.data?.length > 0) {
+            const validRows = data.data.filter(r => r.close > 0);
+            if (validRows.length > 0) {
+              currentQuotes[sym] = parseFloat(validRows[validRows.length - 1].close);
+              updatedCount++;
+            }
+          }
         } else {
           const p = await fetchUSQuoteExtended(sym);
-          if (p) currentQuotes[sym] = p;
+          if (p) {
+            currentQuotes[sym] = p;
+            updatedCount++;
+          }
         }
-      } catch(e) {}
+      } catch(e) {
+        console.warn(`更新 ${sym} 報價失敗:`, e);
+      }
     }
     localStorage.setItem('open_portfolio_quotes_v3', JSON.stringify(currentQuotes));
     render();
+    if (!silent) {
+      alert(`已成功更新 ${updatedCount} 檔標的最新市價！`);
+    }
   }
 
   // 9. 表單監聽與分頁
@@ -1756,7 +1783,7 @@
 
 
   // ===================== 原生 App 級版本偵測與彈跳更新按鈕 =====================
-  const CURRENT_APP_VERSION = '2026.09.26.10';
+  const CURRENT_APP_VERSION = '2026.09.26.15';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
