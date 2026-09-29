@@ -541,7 +541,7 @@
 
   <script>
   // ===================== 版本常數與版本更新模組 =====================
-  const CURRENT_APP_VERSION = '2026.09.29.48';
+  const CURRENT_APP_VERSION = '2026.09.29.49';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
@@ -863,11 +863,10 @@
   firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.firestore();
   let currentUser = null, isSyncingFromCloud = false, cloudUnsubscribe = null;
   const signInUrlParams = new URLSearchParams(location.search);
-  let autoStartGoogleSignIn = signInUrlParams.get('startGoogleSignIn') === '1';
-  if (autoStartGoogleSignIn && signInUrlParams.get('returnToSettings') === '1') {
-    sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
+  if (signInUrlParams.get('startGoogleSignIn') === '1' || signInUrlParams.get('returnToSettings') === '1') {
+    sessionStorage.setItem('capitalProRestoreView', 'viewSettings');
   }
-  if (autoStartGoogleSignIn) {
+  if (signInUrlParams.has('startGoogleSignIn') || signInUrlParams.has('returnToSettings')) {
     const cleanUrl = new URL(location.href);
     cleanUrl.searchParams.delete('startGoogleSignIn');
     cleanUrl.searchParams.delete('returnToSettings');
@@ -876,14 +875,16 @@
 
   function startGoogleSignIn() {
     if (location.protocol === 'file:') {
-      location.assign('https://wowcow0428-png.github.io/my-stock/?startGoogleSignIn=1&returnToSettings=1');
+      location.assign('https://wowcow0428-png.github.io/my-stock/?returnToSettings=1');
       return;
     }
     if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { showGoogleSignInError({ message: 'Firebase 登入元件尚未載入，請確認網路後重新整理。' }, '登入尚未就緒'); return; }
     const authStatusEl = document.getElementById('authStatusText');
     if (authStatusEl) authStatusEl.innerText = '正在開啟 Google 登入…';
     sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
-    auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).catch((err) => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then((result) => {
+      if (result?.user) switchTab('viewSettings');
+    }).catch((err) => {
       sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn');
       showGoogleSignInError(err, 'Google 登入無法啟動');
     });
@@ -901,20 +902,10 @@
     if (badge) { badge.innerText = '登入失敗，請查看登入狀態'; badge.style.color = 'var(--up-red)'; }
   }
 
-  auth.getRedirectResult().then((result) => {
-    if (result?.user) {
-      sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
-      switchTab('viewSettings');
-    }
-  }).catch((err) => {
-    sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn');
-    showGoogleSignInError(err, 'Google 登入未完成');
-  });
-
   auth.onAuthStateChanged((user) => {
     currentUser = user; const authStatusEl = document.getElementById('authStatusText'); const authBtnEl = document.getElementById('authActionBtn'); const cloudBadgeEl = document.getElementById('cloudSyncStatusBadge');
     if (user) { if (authStatusEl) authStatusEl.innerText = `已登入: ${user.email}`; if (authBtnEl) { authBtnEl.innerText = '登出帳號'; authBtnEl.onclick = () => { if (cloudUnsubscribe) cloudUnsubscribe(); auth.signOut(); }; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '雲端自動即時同步中 (已連線)'; cloudBadgeEl.style.color = 'var(--down-green)'; } listenUserDataFromCloud(); if (sessionStorage.getItem('capitalProReturnToSettingsAfterGoogleSignIn') === '1') { sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn'); switchTab('viewSettings'); } } 
-    else { if (cloudUnsubscribe) cloudUnsubscribe(); if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)'; if (authBtnEl) { authBtnEl.innerText = 'Google 註冊／登入'; authBtnEl.onclick = startGoogleSignIn; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '未連線 (請登入帳號)'; cloudBadgeEl.style.color = 'var(--up-red)'; } if (autoStartGoogleSignIn) { autoStartGoogleSignIn = false; startGoogleSignIn(); } }
+    else { if (cloudUnsubscribe) cloudUnsubscribe(); if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)'; if (authBtnEl) { authBtnEl.innerText = 'Google 註冊／登入'; authBtnEl.onclick = startGoogleSignIn; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '未連線 (請登入帳號)'; cloudBadgeEl.style.color = 'var(--up-red)'; } }
   });
 
   function listenUserDataFromCloud() {
