@@ -541,7 +541,7 @@
 
   <script>
   // ===================== 版本常數與版本更新模組 =====================
-  const CURRENT_APP_VERSION = '2026.09.29.45';
+  const CURRENT_APP_VERSION = '2026.09.29.46';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
@@ -862,16 +862,21 @@
   const firebaseConfig = { apiKey: "AIzaSyD-hwATDBNNzQM18xy7iB9hsNwWfbuiM0M", authDomain: "capital-pro-837e1.firebaseapp.com", projectId: "capital-pro-837e1", storageBucket: "capital-pro-837e1.firebasestorage.app", messagingSenderId: "819524088623", appId: "1:819524088623:web:eb5b617602543dc1db67da", measurementId: "G-6TFWD6JZBX" };
   firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.firestore();
   let currentUser = null, isSyncingFromCloud = false, cloudUnsubscribe = null;
-  let autoStartGoogleSignIn = new URLSearchParams(location.search).get('startGoogleSignIn') === '1';
+  const signInUrlParams = new URLSearchParams(location.search);
+  let autoStartGoogleSignIn = signInUrlParams.get('startGoogleSignIn') === '1';
+  if (autoStartGoogleSignIn && signInUrlParams.get('returnToSettings') === '1') {
+    sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
+  }
   if (autoStartGoogleSignIn) {
     const cleanUrl = new URL(location.href);
     cleanUrl.searchParams.delete('startGoogleSignIn');
+    cleanUrl.searchParams.delete('returnToSettings');
     history.replaceState(null, document.title, cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
   }
 
   function startGoogleSignIn() {
     if (location.protocol === 'file:') {
-      location.assign('https://wowcow0428-png.github.io/my-stock/?startGoogleSignIn=1');
+      location.assign('https://wowcow0428-png.github.io/my-stock/?startGoogleSignIn=1&returnToSettings=1');
       return;
     }
     if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { alert('Firebase 登入元件尚未載入，請確認網路後重新整理。'); return; }
