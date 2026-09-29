@@ -541,7 +541,7 @@
 
   <script>
   // ===================== 版本常數與版本更新模組 =====================
-  const CURRENT_APP_VERSION = '2026.09.29.44';
+  const CURRENT_APP_VERSION = '2026.09.29.45';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
@@ -875,7 +875,9 @@
       return;
     }
     if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { alert('Firebase 登入元件尚未載入，請確認網路後重新整理。'); return; }
+    sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
     auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).catch((err) => {
+      sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn');
       console.error('Google sign-in failed', err);
       let message = 'Google 登入無法啟動。';
       if (err?.code === 'auth/unauthorized-domain') message = 'Firebase 尚未授權目前網站網域，請確認 Firebase Authentication 的授權網域設定。';
@@ -887,7 +889,7 @@
 
   auth.onAuthStateChanged((user) => {
     currentUser = user; const authStatusEl = document.getElementById('authStatusText'); const authBtnEl = document.getElementById('authActionBtn'); const cloudBadgeEl = document.getElementById('cloudSyncStatusBadge');
-    if (user) { if (authStatusEl) authStatusEl.innerText = `已登入: ${user.email}`; if (authBtnEl) { authBtnEl.innerText = '登出帳號'; authBtnEl.onclick = () => { if (cloudUnsubscribe) cloudUnsubscribe(); auth.signOut(); }; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '雲端自動即時同步中 (已連線)'; cloudBadgeEl.style.color = 'var(--down-green)'; } listenUserDataFromCloud(); } 
+    if (user) { if (authStatusEl) authStatusEl.innerText = `已登入: ${user.email}`; if (authBtnEl) { authBtnEl.innerText = '登出帳號'; authBtnEl.onclick = () => { if (cloudUnsubscribe) cloudUnsubscribe(); auth.signOut(); }; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '雲端自動即時同步中 (已連線)'; cloudBadgeEl.style.color = 'var(--down-green)'; } listenUserDataFromCloud(); if (sessionStorage.getItem('capitalProReturnToSettingsAfterGoogleSignIn') === '1') { sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn'); switchTab('viewSettings'); } } 
     else { if (cloudUnsubscribe) cloudUnsubscribe(); if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)'; if (authBtnEl) { authBtnEl.innerText = 'Google 註冊／登入'; authBtnEl.onclick = startGoogleSignIn; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '未連線 (請登入帳號)'; cloudBadgeEl.style.color = 'var(--up-red)'; } if (autoStartGoogleSignIn) { autoStartGoogleSignIn = false; startGoogleSignIn(); } }
   });
 
