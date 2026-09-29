@@ -516,7 +516,8 @@
             <span style="color:var(--text-muted);">雲端同步狀態</span><span id="cloudSyncStatusBadge" style="color:var(--text-sub); font-weight:600;">未連線</span>
           </div>
         </div>
-        <button id="authActionBtn" class="btn" style="width:100%; margin-top:14px; font-size:0.84rem; background:linear-gradient(135deg, #4285F4 0%, #34A853 100%);">Google 帳號一鍵登入</button>
+        <button id="authActionBtn" class="btn" onclick="startGoogleSignIn()" style="width:100%; margin-top:14px; font-size:0.84rem; background:linear-gradient(135deg, #4285F4 0%, #34A853 100%);">Google 註冊／登入</button>
+        <div style="margin-top:8px; color:var(--text-muted); font-size:0.72rem; line-height:1.5;">第一次使用會自動建立帳號；之後在其他裝置登入同一個 Google 帳號，即可同步個人資料。</div>
       </div>
 
       <div class="glass-panel" style="padding:20px; margin-bottom:16px;">
@@ -761,14 +762,14 @@
   const quoteState={finnhub:'未連線',fugle:'未連線',quoteMeta:{},lastFallback:{},reconnectTimers:{},fallbackTimer:null,renderFrame:0,lastPersist:0};
   let finnhubSocket=null,fugleSocket=null,isFetchingQuotes=false,quoteGeneration=0,quoteSymbolsSignature='';
   function quoteSymbols(){const h=calculateHoldings();return [...new Set([...Object.values(h).filter(x=>x.shares>0.00001).map(x=>x.symbol),...pledges.map(x=>x.symbol).filter(Boolean)])];}
-  function getUsSession(){try{const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value])),m=Number(p.hour)*60+Number(p.minute);if(p.weekday==='Sat'||p.weekday==='Sun')return '休市';if(m>=240&&m<570)return '盤前';if(m>=570&&m<960)return '正常盤';if(m>=960&&m<1200)return '盤後';return '休市';}catch(e){return '時段未知';}}
-  function setQuoteStatus(extra=''){const el=document.getElementById('quoteStatus');if(!el)return;const latest=Object.values(quoteState.quoteMeta).sort((a,b)=>b.time-a.time)[0],age=latest?Math.max(0,Math.floor((Date.now()-latest.time)/1000)):null,fresh=latest?'最近行情 '+age+' 秒前 · '+latest.source:'尚無新行情';el.textContent='美股 '+quoteState.finnhub+'（'+getUsSession()+'） · 台股 '+quoteState.fugle+' · '+fresh+(extra?' · '+extra:'');}
+  function getUsSession(){try{const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value])),m=Number(p.hour)*60+Number(p.minute),d=p.weekday;if(m>=240&&m<570&&d!=='Sat'&&d!=='Sun')return '盤前';if(m>=570&&m<960&&d!=='Sat'&&d!=='Sun')return '正常盤';if(m>=960&&m<1200&&d!=='Sat'&&d!=='Sun')return '盤後';if((m>=1200&&['Sun','Mon','Tue','Wed','Thu'].includes(d))||(m<240&&['Mon','Tue','Wed','Thu','Fri'].includes(d)))return '夜盤';return '休市';}catch(e){return '時段未知';}}
+  function setQuoteStatus(extra=''){const el=document.getElementById('quoteStatus');if(!el)return;const usMeta=Object.entries(quoteState.quoteMeta).filter(([s])=>!/^[0-9]/.test(s)).sort((a,b)=>b[1].time-a[1].time)[0],usAge=usMeta?Math.max(0,Math.floor((Date.now()-usMeta[1].time)/1000)):null,latest=Object.values(quoteState.quoteMeta).sort((a,b)=>b.time-a.time)[0],age=latest?Math.max(0,Math.floor((Date.now()-latest.time)/1000)):null,fresh=latest?'最近行情 '+age+' 秒前 · '+latest.source:'尚無新行情',usFresh=usMeta?'美股 '+usMeta[0]+' '+usAge+' 秒前 · '+usMeta[1].source:'尚無美股推送',session=getUsSession(),sessionLabel=session==='夜盤'?'夜盤（目前免費來源未必有報價）':session;el.textContent='美股 '+quoteState.finnhub+'（'+sessionLabel+'） · '+usFresh+' · 台股 '+quoteState.fugle+' · '+fresh+(extra?' · '+extra:'');}
   function updateQuote(sym,price,source,time=Date.now()){price=Number(price);if(!Number.isFinite(price)||price<=0)return;currentQuotes[sym]=price;quoteState.quoteMeta[sym]={source,time};if(!quoteState.renderFrame)quoteState.renderFrame=requestAnimationFrame(()=>{quoteState.renderFrame=0;render();setQuoteStatus();});if(Date.now()-quoteState.lastPersist>30000){quoteState.lastPersist=Date.now();try{localStorage.setItem('open_portfolio_quotes_v3',JSON.stringify(currentQuotes));}catch(e){}}}
   function scheduleReconnect(kind,attempt){clearTimeout(quoteState.reconnectTimers[kind]);if(document.visibilityState!=='visible')return;const delay=Math.min(60000,1000*2**Math.min(attempt,6))+Math.random()*500;quoteState.reconnectTimers[kind]=setTimeout(()=>connectQuoteSocket(kind,attempt+1),delay);}
   function closeQuoteSockets(){clearTimeout(quoteState.reconnectTimers.finnhub);clearTimeout(quoteState.reconnectTimers.fugle);if(finnhubSocket){finnhubSocket.onclose=null;finnhubSocket.close();finnhubSocket=null;}if(fugleSocket){fugleSocket.onclose=null;fugleSocket.close();fugleSocket=null;}quoteState.finnhub=finnhubKey?'連線中…':'未設定金鑰';quoteState.fugle=fugleKey?'連線中…':'延遲備援';setQuoteStatus();}
   function restartQuoteStreams(){quoteGeneration++;quoteSymbolsSignature=quoteSymbols().sort().join('|');closeQuoteSockets();if(document.visibilityState==='visible'){connectQuoteSocket('finnhub',0);connectQuoteSocket('fugle',0);}}
   function ensureQuoteSubscriptions(){const signature=quoteSymbols().sort().join('|');if(signature!==quoteSymbolsSignature)restartQuoteStreams();}
-  function connectQuoteSocket(kind,attempt=0){if(document.visibilityState!=='visible')return;const generation=quoteGeneration,syms=quoteSymbols();if(kind==='finnhub'){const us=syms.filter(x=>!/^[0-9]/.test(x));if(!finnhubKey||!us.length){quoteState.finnhub=finnhubKey?'無美股標的':'未設定金鑰';setQuoteStatus();return;}try{const ws=new WebSocket('wss://ws.finnhub.io?token='+encodeURIComponent(finnhubKey));finnhubSocket=ws;quoteState.finnhub='連線中…';setQuoteStatus();ws.onopen=()=>{if(generation!==quoteGeneration)return;quoteState.finnhub='串流中';us.forEach(symbol=>ws.send(JSON.stringify({type:'subscribe',symbol})));setQuoteStatus();};ws.onmessage=e=>{if(generation!==quoteGeneration)return;try{const m=JSON.parse(e.data);if(m.type==='trade'&&Array.isArray(m.data))m.data.forEach(t=>updateQuote(t.s,t.p,'Finnhub WebSocket',Number(t.t)||Date.now()));else if(m.type==='error'){quoteState.finnhub='供應商錯誤';setQuoteStatus(m.msg||'');}}catch(err){}};ws.onerror=()=>{quoteState.finnhub='連線錯誤';setQuoteStatus();};ws.onclose=()=>{if(generation===quoteGeneration){quoteState.finnhub='斷線，重連中';setQuoteStatus();scheduleReconnect(kind,attempt);}};}catch(e){quoteState.finnhub='無法連線';scheduleReconnect(kind,attempt);setQuoteStatus();}return;}
+  function connectQuoteSocket(kind,attempt=0){if(document.visibilityState!=='visible')return;const generation=quoteGeneration,syms=quoteSymbols();if(kind==='finnhub'){const us=syms.filter(x=>!/^[0-9]/.test(x));if(!finnhubKey||!us.length){quoteState.finnhub=finnhubKey?'無美股標的':'未設定金鑰';setQuoteStatus();return;}try{const ws=new WebSocket('wss://ws.finnhub.io?token='+encodeURIComponent(finnhubKey));finnhubSocket=ws;quoteState.finnhub='連線中…';setQuoteStatus();ws.onopen=()=>{if(generation!==quoteGeneration)return;quoteState.finnhub='已連線，等待美股成交';us.forEach(symbol=>ws.send(JSON.stringify({type:'subscribe',symbol})));setQuoteStatus('訂閱 '+us.join(', '));};ws.onmessage=e=>{if(generation!==quoteGeneration)return;try{const m=JSON.parse(e.data);if(m.type==='trade'&&Array.isArray(m.data)){quoteState.finnhub='收到美股串流';m.data.forEach(t=>updateQuote(t.s,t.p,'Finnhub WebSocket',Number(t.t)||Date.now()));setQuoteStatus();}else if(m.type==='error'){quoteState.finnhub='供應商錯誤';setQuoteStatus(m.msg||'');}}catch(err){}};ws.onerror=()=>{quoteState.finnhub='連線錯誤';setQuoteStatus();};ws.onclose=()=>{if(generation===quoteGeneration){quoteState.finnhub='斷線，重連中';setQuoteStatus();scheduleReconnect(kind,attempt);}};}catch(e){quoteState.finnhub='無法連線';scheduleReconnect(kind,attempt);setQuoteStatus();}return;}
     const tw=syms.filter(x=>/^\d/.test(x));if(!fugleKey||!tw.length){quoteState.fugle=fugleKey?'無台股標的':'使用延遲備援';setQuoteStatus();return;}try{const ws=new WebSocket('wss://api.fugle.tw/marketdata/v1.0/stock/streaming');fugleSocket=ws;quoteState.fugle='連線中…';setQuoteStatus();ws.onopen=()=>{if(generation===quoteGeneration)ws.send(JSON.stringify({event:'auth',data:{apikey:fugleKey}}));};ws.onmessage=e=>{if(generation!==quoteGeneration)return;try{const m=JSON.parse(e.data);if(m.event==='authenticated'){quoteState.fugle='串流中';tw.slice(0,5).forEach(symbol=>ws.send(JSON.stringify({event:'subscribe',data:{channel:'trades',symbol}})));setQuoteStatus(tw.length>5?'基本方案最多 5 個訂閱，其餘用備援':'');}else if(m.event==='data'&&m.data){const d=m.data;updateQuote(d.symbol,Number(d.price)||Number(d.lastPrice),'Fugle WebSocket',Number(d.time)>1e12?Number(d.time)/1000:Date.now());}else if(m.event==='error'){quoteState.fugle='驗證/訂閱失敗';setQuoteStatus(m.data?.message||'');}}catch(err){}};ws.onerror=()=>{quoteState.fugle='連線錯誤';setQuoteStatus();};ws.onclose=()=>{if(generation===quoteGeneration){quoteState.fugle='斷線，重連中';setQuoteStatus();scheduleReconnect(kind,attempt);}};}catch(e){quoteState.fugle='無法連線';scheduleReconnect(kind,attempt);setQuoteStatus();}}
   function withTimeout(ms){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);return {signal:c.signal,done:()=>clearTimeout(t)};}
   async function fetchFinnhubQuote(sym,key){const x=withTimeout(8000);try{const r=await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(sym)+'&token='+encodeURIComponent(key),{cache:'no-store',signal:x.signal});if(r.ok){const d=await r.json();if(Number(d?.c)>0)return {price:Number(d.c),time:Number(d.t||0)*1000||Date.now()};}}catch(e){}finally{x.done();}return null;}
@@ -778,15 +779,16 @@
     if(isFetchingQuotes||document.visibilityState!=='visible')return;
     isFetchingQuotes=true;const gen=quoteGeneration;let n=0;
     try{
-      for(const sym of quoteSymbols()){
+      const symbols=quoteSymbols(),session=getUsSession();
+      for(const sym of symbols){
         if(gen!==quoteGeneration)break;
         const tw=/^\d/.test(sym),meta=quoteState.quoteMeta[sym],nowMs=Date.now();
         if(silent&&meta&&nowMs-meta.time<20000)continue;
         if(silent&&nowMs-(quoteState.lastFallback[sym]||0)<60000)continue;
         quoteState.lastFallback[sym]=nowMs;
-        let q=null,source='';const session=getUsSession(),extended=!tw&&(session==='盤前'||session==='盤後');
+        let q=null,source='';const extended=!tw&&(session==='盤前'||session==='盤後'||session==='夜盤');
         if(tw&&fugleKey){q=await fetchFugleQuote(sym,fugleKey);source='Fugle REST 快照';}
-        if(!tw&&extended){q=await fetchYahooV8Quote(sym);source='Yahoo 盤前/盤後快照代理（延遲不保證）';}
+        if(!tw&&extended){q=await fetchYahooV8Quote(sym);source=session==='夜盤'?'Yahoo 夜盤快照代理（不保證涵蓋夜盤）':'Yahoo 盤前/盤後快照代理（延遲不保證）';}
         if(!q&&!tw&&finnhubKey){q=await fetchFinnhubQuote(sym,finnhubKey);source='Finnhub REST 快照';}
         if(!q){q=await fetchYahooV8Quote(tw?sym+'.TW':sym);if(!q&&tw)q=await fetchYahooV8Quote(sym+'.TWO');source='Yahoo 代理（延遲/時間不保證）';}
         if(q){updateQuote(sym,q.price,source,q.time);n++;}
@@ -860,11 +862,33 @@
   const firebaseConfig = { apiKey: "AIzaSyD-hwATDBNNzQM18xy7iB9hsNwWfbuiM0M", authDomain: "capital-pro-837e1.firebaseapp.com", projectId: "capital-pro-837e1", storageBucket: "capital-pro-837e1.firebasestorage.app", messagingSenderId: "819524088623", appId: "1:819524088623:web:eb5b617602543dc1db67da", measurementId: "G-6TFWD6JZBX" };
   firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.firestore();
   let currentUser = null, isSyncingFromCloud = false, cloudUnsubscribe = null;
+  let autoStartGoogleSignIn = new URLSearchParams(location.search).get('startGoogleSignIn') === '1';
+  if (autoStartGoogleSignIn) {
+    const cleanUrl = new URL(location.href);
+    cleanUrl.searchParams.delete('startGoogleSignIn');
+    history.replaceState(null, document.title, cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+  }
+
+  function startGoogleSignIn() {
+    if (location.protocol === 'file:') {
+      location.assign('https://wowcow0428-png.github.io/my-stock/?startGoogleSignIn=1');
+      return;
+    }
+    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { alert('Firebase 登入元件尚未載入，請確認網路後重新整理。'); return; }
+    auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).catch((err) => {
+      console.error('Google sign-in failed', err);
+      let message = 'Google 登入無法啟動。';
+      if (err?.code === 'auth/unauthorized-domain') message = 'Firebase 尚未授權目前網站網域，請確認 Firebase Authentication 的授權網域設定。';
+      else if (err?.code) message += `（${err.code}）`;
+      if (err?.message) message += `\n${err.message}`;
+      alert(message);
+    });
+  }
 
   auth.onAuthStateChanged((user) => {
     currentUser = user; const authStatusEl = document.getElementById('authStatusText'); const authBtnEl = document.getElementById('authActionBtn'); const cloudBadgeEl = document.getElementById('cloudSyncStatusBadge');
     if (user) { if (authStatusEl) authStatusEl.innerText = `已登入: ${user.email}`; if (authBtnEl) { authBtnEl.innerText = '登出帳號'; authBtnEl.onclick = () => { if (cloudUnsubscribe) cloudUnsubscribe(); auth.signOut(); }; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '雲端自動即時同步中 (已連線)'; cloudBadgeEl.style.color = 'var(--down-green)'; } listenUserDataFromCloud(); } 
-    else { if (cloudUnsubscribe) cloudUnsubscribe(); if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)'; if (authBtnEl) { authBtnEl.innerText = 'Google 帳號一鍵登入'; authBtnEl.onclick = () => { auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()); }; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '未連線 (請登入帳號)'; cloudBadgeEl.style.color = 'var(--up-red)'; } }
+    else { if (cloudUnsubscribe) cloudUnsubscribe(); if (authStatusEl) authStatusEl.innerText = '尚未登入 (目前僅存於本機)'; if (authBtnEl) { authBtnEl.innerText = 'Google 註冊／登入'; authBtnEl.onclick = startGoogleSignIn; } if (cloudBadgeEl) { cloudBadgeEl.innerText = '未連線 (請登入帳號)'; cloudBadgeEl.style.color = 'var(--up-red)'; } if (autoStartGoogleSignIn) { autoStartGoogleSignIn = false; startGoogleSignIn(); } }
   });
 
   function listenUserDataFromCloud() {
