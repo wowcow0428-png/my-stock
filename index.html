@@ -541,7 +541,7 @@
 
   <script>
   // ===================== 版本常數與版本更新模組 =====================
-  const CURRENT_APP_VERSION = '2026.09.29.46';
+  const CURRENT_APP_VERSION = '2026.09.29.48';
 
   function initAppVersionDisplay() {
     const el = document.getElementById('appVersionDisplay');
@@ -561,7 +561,7 @@
   function showUpdateToast(newVer) {
     if (document.getElementById('appUpdateToast')) return;
     const toast = document.createElement('div'); toast.id = 'appUpdateToast'; toast.className = 'update-toast';
-    toast.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><span style="font-size:1.3rem;">⚡</span><div><div style="font-weight:800; color:#fff; font-size:0.88rem;">發現全新升級版本！</div><div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">最新版本: ${newVer}</div></div></div><div style="display:flex; gap:6px; align-items:center;"><button class="btn btn-sm" onclick="window.location.replace(window.location.origin + window.location.pathname + '?reload=' + Date.now())" style="background:var(--cyan); color:#030712; font-weight:800; padding:6px 14px; border-radius:8px;">立即更新</button></div>`;
+    toast.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><span style="font-size:1.3rem;">⚡</span><div><div style="font-weight:800; color:#fff; font-size:0.88rem;">發現全新升級版本！</div><div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">最新版本: ${newVer}</div></div></div><div style="display:flex; gap:6px; align-items:center;"><button class="btn btn-sm" onclick="sessionStorage.setItem('capitalProRestoreView', document.querySelector('.tab-view.active-view')?.id || 'viewOverview'); window.location.replace(window.location.origin + window.location.pathname + '?reload=' + Date.now())" style="background:var(--cyan); color:#030712; font-weight:800; padding:6px 14px; border-radius:8px;">立即更新</button></div>`;
     document.body.appendChild(toast); if (navigator.vibrate) navigator.vibrate([20, 50, 20]); setTimeout(() => toast.classList.add('show'), 100);
   }
 
@@ -879,18 +879,37 @@
       location.assign('https://wowcow0428-png.github.io/my-stock/?startGoogleSignIn=1&returnToSettings=1');
       return;
     }
-    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { alert('Firebase 登入元件尚未載入，請確認網路後重新整理。'); return; }
+    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') { showGoogleSignInError({ message: 'Firebase 登入元件尚未載入，請確認網路後重新整理。' }, '登入尚未就緒'); return; }
+    const authStatusEl = document.getElementById('authStatusText');
+    if (authStatusEl) authStatusEl.innerText = '正在開啟 Google 登入…';
     sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
     auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).catch((err) => {
       sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn');
-      console.error('Google sign-in failed', err);
-      let message = 'Google 登入無法啟動。';
-      if (err?.code === 'auth/unauthorized-domain') message = 'Firebase 尚未授權目前網站網域，請確認 Firebase Authentication 的授權網域設定。';
-      else if (err?.code) message += `（${err.code}）`;
-      if (err?.message) message += `\n${err.message}`;
-      alert(message);
+      showGoogleSignInError(err, 'Google 登入無法啟動');
     });
   }
+
+  function showGoogleSignInError(err, prefix = 'Google 登入失敗') {
+    console.error(prefix, err);
+    const statusEl = document.getElementById('authStatusText');
+    const code = err?.code ? `（${err.code}）` : '';
+    const detail = err?.code === 'auth/unauthorized-domain'
+      ? 'Firebase 尚未授權目前網站網域。'
+      : (err?.message || '請確認網路連線後再試一次。');
+    if (statusEl) statusEl.innerText = `${prefix}${code}：${detail}`;
+    const badge = document.getElementById('cloudSyncStatusBadge');
+    if (badge) { badge.innerText = '登入失敗，請查看登入狀態'; badge.style.color = 'var(--up-red)'; }
+  }
+
+  auth.getRedirectResult().then((result) => {
+    if (result?.user) {
+      sessionStorage.setItem('capitalProReturnToSettingsAfterGoogleSignIn', '1');
+      switchTab('viewSettings');
+    }
+  }).catch((err) => {
+    sessionStorage.removeItem('capitalProReturnToSettingsAfterGoogleSignIn');
+    showGoogleSignInError(err, 'Google 登入未完成');
+  });
 
   auth.onAuthStateChanged((user) => {
     currentUser = user; const authStatusEl = document.getElementById('authStatusText'); const authBtnEl = document.getElementById('authActionBtn'); const cloudBadgeEl = document.getElementById('cloudSyncStatusBadge');
@@ -910,7 +929,16 @@
   // ===================== 初始化 =====================
   document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 7); document.getElementById('pledgeDate').value = new Date().toISOString().slice(0, 10);
   initAppVersionDisplay(); setupAutocomplete('symbol', 'symbolDropdown'); setupAutocomplete('pledgeSymbol', 'pledgeSymbolDropdown');
-  renderOverviewWidgets(); render(); fetchRealtimeRate(); fetchAllQuotes(false); autoFetchDividendSchedules(true);
+  const initialUrl = new URL(location.href);
+  const returnToSettings = initialUrl.searchParams.get('returnToSettings') === '1' || sessionStorage.getItem('capitalProRestoreView') === 'viewSettings';
+  sessionStorage.removeItem('capitalProRestoreView');
+  if (returnToSettings) {
+    initialUrl.searchParams.delete('returnToSettings');
+    history.replaceState(null, document.title, initialUrl.pathname + initialUrl.search + initialUrl.hash);
+  }
+  renderOverviewWidgets(); render();
+  if (returnToSettings) switchTab('viewSettings');
+  fetchRealtimeRate(); fetchAllQuotes(true); autoFetchDividendSchedules(true);
 
   setTimeout(checkForAppUpdates, 2000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { checkForAppUpdates(); restartQuoteStreams(); startSmartAutoRefresh(); } else { quoteGeneration++; closeQuoteSockets(); clearTimeout(quoteState.fallbackTimer); } });
